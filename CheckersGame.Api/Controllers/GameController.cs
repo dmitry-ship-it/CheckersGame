@@ -21,6 +21,7 @@ namespace CheckersGame.Api.Controllers
         [HttpPost]
         public IActionResult Get([FromBody] MoveModel moveModel)
         {
+            // TODO: Refactor?
             try
             {
                 _game.NextTurn((moveModel.From.Row, moveModel.From.Col), (moveModel.To.Row, moveModel.To.Col));

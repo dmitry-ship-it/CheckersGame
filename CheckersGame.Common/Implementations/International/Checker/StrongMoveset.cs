@@ -9,8 +9,10 @@ using System.Threading.Tasks;
 
 namespace CheckersGame.Common.Implementations.International.Checker
 {
+    // TODO: Refactor all class. Add abstarct base type
     internal class StrongMoveset : IMoveset
     {
+        // TODO: Refactor
         public bool IsLegalMove((int row, int col) from, (int row, int col) to, IBoard board)
         {
             // inital pos is invalid
@@ -44,6 +46,7 @@ namespace CheckersGame.Common.Implementations.International.Checker
             return true;
         }
 
+        // TODO: Refactor (with on line 79)
         public (int row, int col)? TryGetEnemyPosOnTheWay((int row, int col) from, (int row, int col) to, IBoard board)
         {
             if (!IsEnemyOnTheWay(from, to, board))
@@ -75,6 +78,7 @@ namespace CheckersGame.Common.Implementations.International.Checker
             return null;
         }
 
+        // TODO: Refactor (with on line 47)
         private bool IsEnemyOnTheWay((int row, int col) from, (int row, int col) to, IBoard board)
         {
             var rowDirection = Math.Abs(to.row - from.row) / (to.row - from.row);

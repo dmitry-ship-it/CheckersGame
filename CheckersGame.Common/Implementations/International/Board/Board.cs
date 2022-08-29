@@ -30,6 +30,8 @@ namespace CheckersGame.Common.Implementations.International.Board
             Cols = 10;
             _cells = ConstructBoard(Rows, Cols);
         }
+
+        // TODO: Refactor
         public void MoveChecker(
             (int row, int col) from,
             (int row, int col) to,
@@ -61,6 +63,7 @@ namespace CheckersGame.Common.Implementations.International.Board
              _cells[to.row, to.col]);
         }
 
+        // TODO: Refactor
         private ICell[,] ConstructBoard(int rows, int cols)
         {
             ICell[,] cells = new Cell[rows, cols];

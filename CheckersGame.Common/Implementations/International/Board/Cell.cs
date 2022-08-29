@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace CheckersGame.Common.Implementations.International.Board
 {
+    // TODO: Looks like it's redundant. Refactor?
     internal class Cell : ICell
     {
         public static Cell Empty { get; } = new();

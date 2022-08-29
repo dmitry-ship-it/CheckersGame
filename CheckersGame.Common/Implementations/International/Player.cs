@@ -21,6 +21,7 @@ namespace CheckersGame.Common.Implementations.International
 
         public Color Color { get; init; }
 
+        // TODO: Refactor\remove
         public void MoveChecker(
             (int row, int col) from,
             (int row, int col) to)

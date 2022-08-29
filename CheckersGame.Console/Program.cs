@@ -3,6 +3,7 @@
 var game = new Game();
 PrintBoard();
 
+// TODO: REFACTOR ALL THIS SHIT
 while (true)
 {
     Console.WriteLine($"Now its {game.Turn.Color}'s turn:");

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace CheckersGame.Common.Implementations.International.Checker
 {
+    // TODO: Refactor all class. Create base abstract class
     internal class BasicMoveset : IMoveset
     {
         public (int row, int col)? TryGetEnemyPosOnTheWay((int row, int col) from, (int row, int col) to, IBoard board)
@@ -65,15 +66,6 @@ namespace CheckersGame.Common.Implementations.International.Checker
         {
             var rowDirection = Math.Abs(to.row - from.row) / (to.row - from.row);
             var colDirection = Math.Abs(to.col - from.col) / (to.col - from.col);
-
-            // TODO: use for strong
-            // for (int i = from.row, j = from.col; i < to.row && j < to.col; i += rowDirection, j += colDirection)
-            // {
-            //     if (board[i, j]?.Checker is not null)
-            //     {
-            //         return true;
-            //     }
-            // }
 
             return board[from.row + rowDirection, from.col + colDirection]?.Checker is not null;
         }

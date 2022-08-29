@@ -16,10 +16,12 @@ namespace CheckersGame.Common.Implementations.International.Checker
 
         public BasicChecker(Color color)
         {
+            // Use DI??
             Moveset = new BasicMoveset();
             Color = color;
         }
 
+        // TODO: use more informational result string
         public override string ToString() => "Basic";
     }
 }

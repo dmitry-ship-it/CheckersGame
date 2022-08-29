@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace CheckersGame.Common.Implementations.International.Checker
 {
+    // TODO: Create base abstract class
     internal class StrongChecker : IChecker
     {
         public StrongChecker(Color color)
@@ -20,6 +21,7 @@ namespace CheckersGame.Common.Implementations.International.Checker
 
         public Color Color { get; init; }
 
+        // TODO: need to be more informative
         public override string ToString() => "Strong";
     }
 }

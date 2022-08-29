@@ -10,6 +10,7 @@ namespace CheckersGame.Common.Implementations.International.Checker
 {
     internal class CheckerFactory
     {
+        // Make methods generic?
         public IChecker CreateNewBlack(CheckerType checkerType)
         {
             return CreateNew(checkerType, Color.Black);

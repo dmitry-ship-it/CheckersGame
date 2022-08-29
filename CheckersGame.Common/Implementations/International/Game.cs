@@ -28,10 +28,12 @@ namespace CheckersGame.Common.Implementations.International
             WhitePlayer = new Player(Board, Color.White);
         }
 
+        // TODO: Refactor
         public void NextTurn(
             (int row, int col) from,
             (int row, int col) to)
         {
+            // TODO: Refactor
             if ((Board[from.row, from.col]?.Checker?.Color == WhitePlayer.Color && !_isWhiteTurn)
                 || (Board[from.row, from.col]?.Checker?.Color == BlackPlayer.Color && _isWhiteTurn))
             {
@@ -46,13 +48,14 @@ namespace CheckersGame.Common.Implementations.International
             }
 
             // when swap is successful
+            // TODO: Refactor
             if (Board[to.row, to.col]?.Checker?.Color == WhitePlayer.Color
-                && to.row == Board.Rows - 1)
+                && to.row == 0)
             {
                 Board[to.row, to.col] = new Cell(new StrongChecker(WhitePlayer.Color));
             }
             if (Board[to.row, to.col]?.Checker?.Color == BlackPlayer.Color
-                && to.row == 0)
+                && to.row == Board.Rows - 1)
             {
                 Board[to.row, to.col] = new Cell(new StrongChecker(BlackPlayer.Color));
             }
@@ -60,6 +63,7 @@ namespace CheckersGame.Common.Implementations.International
             _isWhiteTurn = !_isWhiteTurn;
         }
 
+        // TODO: Refactor
         public IPlayer? GetWinner()
         {
             if (GetCheckers(WhitePlayer.Color) == 0)
