@@ -1,0 +1,46 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32630.192
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{7022CB17-6635-47AE-ADEE-1AFD7642ABB6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{EC09B635-4928-43AB-9C70-CF11258AA5CE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CheckersGame.Common", "CheckersGame.Common\CheckersGame.Common.csproj", "{D411A0BC-6EFE-4217-9E53-F58EDC177653}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CheckersGame.Console", "CheckersGame.Console\CheckersGame.Console.csproj", "{DB223F55-0C2C-4242-8B0D-277AFDDF4EFA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CheckersGame.Api", "CheckersGame.Api\CheckersGame.Api.csproj", "{69D2BD05-7ACC-4B12-ABCA-8C5366F27748}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D411A0BC-6EFE-4217-9E53-F58EDC177653}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D411A0BC-6EFE-4217-9E53-F58EDC177653}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D411A0BC-6EFE-4217-9E53-F58EDC177653}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D411A0BC-6EFE-4217-9E53-F58EDC177653}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DB223F55-0C2C-4242-8B0D-277AFDDF4EFA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DB223F55-0C2C-4242-8B0D-277AFDDF4EFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DB223F55-0C2C-4242-8B0D-277AFDDF4EFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DB223F55-0C2C-4242-8B0D-277AFDDF4EFA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{69D2BD05-7ACC-4B12-ABCA-8C5366F27748}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69D2BD05-7ACC-4B12-ABCA-8C5366F27748}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69D2BD05-7ACC-4B12-ABCA-8C5366F27748}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69D2BD05-7ACC-4B12-ABCA-8C5366F27748}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D411A0BC-6EFE-4217-9E53-F58EDC177653} = {7022CB17-6635-47AE-ADEE-1AFD7642ABB6}
+		{DB223F55-0C2C-4242-8B0D-277AFDDF4EFA} = {7022CB17-6635-47AE-ADEE-1AFD7642ABB6}
+		{69D2BD05-7ACC-4B12-ABCA-8C5366F27748} = {7022CB17-6635-47AE-ADEE-1AFD7642ABB6}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F6E943CD-1610-407F-BA07-6F68712845AA}
+	EndGlobalSection
+EndGlobal
