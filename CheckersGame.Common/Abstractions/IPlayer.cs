@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Drawing;
 
 namespace CheckersGame.Common.Abstractions
 {
-    public interface IPlayer : IMover
+    public interface IPlayer
     {
         Color Color { get; init; }
+
+        int CheckersCount { get; set; }
     }
 }

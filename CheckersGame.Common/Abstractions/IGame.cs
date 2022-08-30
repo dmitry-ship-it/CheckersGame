@@ -1,23 +1,17 @@
 ﻿using CheckersGame.Common.Abstractions.Board;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CheckersGame.Common.Abstractions
 {
     public interface IGame
     {
+        string? EndMessage { get; }
+
         IBoard Board { get; init; }
 
-        IPlayer BlackPlayer { get; init; }
+        (IPlayer First, IPlayer Second) Players { get; init; }
 
-        IPlayer WhitePlayer { get; init; }
+        IPlayer CurrentPlayerTurn { get; }
 
-        IPlayer Turn { get; }
-        void NextTurn(
-                    (int row, int col) from,
-                    (int row, int col) to);
+        void NextTurn(Cell from, Cell to);
     }
 }
