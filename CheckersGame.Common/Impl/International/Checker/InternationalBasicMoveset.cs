@@ -10,7 +10,8 @@ namespace CheckersGame.Common.Impl.International.Checker
         private static IMoveset _instance = new InternationalBasicMoveset();
         public static IMoveset Instance => _instance ??= new InternationalBasicMoveset();
 
-        private InternationalBasicMoveset() { }
+        private InternationalBasicMoveset()
+        { }
 
         public (Cell? EnemyCell, bool IsLegalMove) GetInfo(Cell from, Cell to, IBoard board)
         {
