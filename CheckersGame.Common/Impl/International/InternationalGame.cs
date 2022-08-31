@@ -28,7 +28,7 @@ namespace CheckersGame.Common.Impl.International
 
         public void NextTurn(Cell from, Cell to)
         {
-            if (Board[from].Color != CurrentPlayerTurn.Color)
+            if (Board[from]?.Color != CurrentPlayerTurn.Color)
             {
                 throw new ArgumentException("This player can't touch this checker.");
             }

@@ -16,9 +16,9 @@ namespace CheckersGame.Common.Impl.International.Board
         {
             var board = new BaseChecker[10, 10];
 
-            FillRows(board, 0, 4, new BaseChecker(Color.White, InternationalBasicMoveset.Instance));
+            FillRows(board, 0, 4, new BaseChecker(Color.Black, InternationalBasicMoveset.Instance));
             FillRows(board, 4, 2, BaseChecker.Empty);
-            FillRows(board, 6, 4, new BaseChecker(Color.Black, InternationalBasicMoveset.Instance));
+            FillRows(board, 6, 4, new BaseChecker(Color.White, InternationalBasicMoveset.Instance));
 
             return board;
         }
@@ -31,7 +31,7 @@ namespace CheckersGame.Common.Impl.International.Board
                 {
                     if ((i + j) % 2 != 0)
                     {
-                        board[i, j] = (IChecker)checker.Clone();
+                        board[i, j] = checker is null ? null : (IChecker)checker.Clone();
                     }
                 }
             }

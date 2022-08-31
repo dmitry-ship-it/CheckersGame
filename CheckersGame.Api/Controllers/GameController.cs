@@ -11,7 +11,7 @@ namespace CheckersGame.Api.Controllers
     [Route("api/[controller]")]
     public class GameController : ControllerBase
     {
-        private readonly Dictionary<Guid, bool> _games = new();
+        private static readonly Dictionary<Guid, bool> _games = new();
 
         private readonly IMemoryCache _memoryCache;
         private readonly GameFactory _gameFactory;
@@ -27,7 +27,7 @@ namespace CheckersGame.Api.Controllers
         [HttpGet("types")]
         public IActionResult GetGameTypes()
         {
-            return Ok(Enum.GetValues<GameType>());
+            return Ok(Enum.GetNames<GameType>());
         }
 
         [HttpGet("pending")]
@@ -40,13 +40,14 @@ namespace CheckersGame.Api.Controllers
                 return new
                 {
                     Id = pair.Key,
-                    Name = nameof(game)
+                    Name = nameof(game) // FIXME: returns 'game' - invalid
+                                        // but should be 'International' or equivalent
                 };
             }));
         }
 
-        [HttpPost("start-new")]
-        public IActionResult StartGame([FromRoute] string gameType)
+        [HttpGet("start-new")]
+        public IActionResult StartGame(string gameType)
         {
             GameType game;
             try
@@ -71,7 +72,7 @@ namespace CheckersGame.Api.Controllers
             return Ok(new UpdateModel
             {
                 Id = gameId,
-                Board = gameInstance.Board.AsEnumerable(),
+                Board = gameInstance.Board,
                 CurrentPlayerTurn = gameInstance.CurrentPlayerTurn.Color.Name,
                 IsEnded = false
             });
@@ -85,6 +86,11 @@ namespace CheckersGame.Api.Controllers
                 return BadRequest();
             }
 
+            if (!_games[gameId])
+            {
+                return BadRequest("Game already started.");
+            }
+
             // game started
             _games[gameId] = false;
             var game = _memoryCache.Get<IGame>(gameId);
@@ -93,6 +99,7 @@ namespace CheckersGame.Api.Controllers
             {
                 Id = gameId,
                 Board = game.Board,
+                CurrentPlayerTurn = game.CurrentPlayerTurn.Color.Name,
                 IsEnded = game.EndMessage is not null
             });
         }
@@ -118,6 +125,7 @@ namespace CheckersGame.Api.Controllers
             {
                 Id = moveModel.GameId,
                 Board = game.Board,
+                CurrentPlayerTurn = game.CurrentPlayerTurn.Color.Name,
                 IsEnded = game.EndMessage is not null
             });
         }

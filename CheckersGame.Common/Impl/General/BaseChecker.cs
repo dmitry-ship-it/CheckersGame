@@ -24,7 +24,7 @@ namespace CheckersGame.Common.Impl.General
 
         public override string ToString()
         {
-            return $"{Moveset}Checker";
+            return $"{Moveset}{Color.Name}";
         }
     }
 }
