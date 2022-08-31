@@ -4,7 +4,7 @@ using CheckersGame.Common.Abstractions.Checker;
 
 namespace CheckersGame.Common.Impl.International.Checker
 {
-    internal class InternationalStrongMoveset : IMoveset
+    internal sealed class InternationalStrongMoveset : IMoveset
     {
         private static IMoveset _instance = new InternationalStrongMoveset();
         public static IMoveset Instance => _instance ??= new InternationalStrongMoveset();
@@ -14,6 +14,11 @@ namespace CheckersGame.Common.Impl.International.Checker
         public (Cell? EnemyCell, bool IsLegalMove) GetInfo(Cell from, Cell to, IBoard board)
         {
             throw new NotImplementedException();
+        }
+
+        public override string ToString()
+        {
+            return "Strong";
         }
     }
 }

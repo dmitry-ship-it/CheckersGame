@@ -2,7 +2,7 @@
 {
     public struct Cell
     {
-        public int Row;
-        public int Col;
+        public int Row { get; init; }
+        public int Col { get; init; }
     }
 }

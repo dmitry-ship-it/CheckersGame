@@ -21,5 +21,10 @@ namespace CheckersGame.Common.Impl.General
         {
             return new BaseChecker(Color, Moveset);
         }
+
+        public override string ToString()
+        {
+            return $"{Moveset}Checker";
+        }
     }
 }
