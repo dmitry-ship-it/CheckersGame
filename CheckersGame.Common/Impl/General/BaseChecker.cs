@@ -3,17 +3,23 @@ using System.Drawing;
 
 namespace CheckersGame.Common.Impl.General
 {
-    internal abstract class BaseChecker : IChecker
+    internal class BaseChecker : IChecker
     {
-        protected BaseChecker(Color color)
+        public BaseChecker(Color color, IMoveset moveset)
         {
             Color = color;
+            Moveset = moveset;
         }
 
-        public abstract IMoveset Moveset { get; set; }
+        public IMoveset Moveset { get; set; }
 
         public Color Color { get; init; }
 
-        public abstract object Clone();
+        public static BaseChecker Empty { get; } = null!;
+
+        public object Clone()
+        {
+            return new BaseChecker(Color, Moveset);
+        }
     }
 }

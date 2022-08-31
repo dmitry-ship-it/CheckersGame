@@ -14,11 +14,11 @@ namespace CheckersGame.Common.Impl.International.Board
 
         private static IChecker[,] GenerateBoard()
         {
-            var board = new InternationalBasicChecker[10, 10];
+            var board = new BaseChecker[10, 10];
 
-            FillRows(board, 0, 4, new InternationalBasicChecker(Color.White));
-            FillRows(board, 4, 2, InternationalBasicChecker.Empty);
-            FillRows(board, 6, 4, new InternationalBasicChecker(Color.Black));
+            FillRows(board, 0, 4, new BaseChecker(Color.White, InternationalBasicMoveset.Instance));
+            FillRows(board, 4, 2, BaseChecker.Empty);
+            FillRows(board, 6, 4, new BaseChecker(Color.Black, InternationalBasicMoveset.Instance));
 
             return board;
         }
@@ -39,7 +39,7 @@ namespace CheckersGame.Common.Impl.International.Board
 
         public override void HandleMove(Cell from, Cell to, out bool isCheckerBeaten)
         {
-            if (this[from] == InternationalBasicChecker.Empty)
+            if (this[from] == BaseChecker.Empty)
             {
                 throw new ArgumentException("This cell is empty", nameof(from));
             }
@@ -53,24 +53,24 @@ namespace CheckersGame.Common.Impl.International.Board
 
             if (enemyCell is not null)
             {
-                this[enemyCell.Value] = InternationalBasicChecker.Empty;
+                this[enemyCell.Value] = BaseChecker.Empty;
             }
 
             isCheckerBeaten = enemyCell.HasValue;
 
-            NewMethod(from, to);
+            TryUpgradeChecker(from, to);
             SwapCheckers(from, to);
         }
 
-        private void NewMethod(Cell from, Cell to)
+        private void TryUpgradeChecker(Cell from, Cell to)
         {
             if (this[from].Color == Color.White && to.Row == Rows - 1)
             {
-                this[from] = new InternationalStrongChecker(Color.White);
+                this[from].Moveset = InternationalStrongMoveset.Instance;
             }
             else if (this[from].Color == Color.Black && to.Row == 0)
             {
-                this[from] = new InternationalStrongChecker(Color.Black);
+                this[from].Moveset = InternationalStrongMoveset.Instance;
             }
         }
 
