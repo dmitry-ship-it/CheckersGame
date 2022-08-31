@@ -34,17 +34,17 @@ namespace CheckersGame.Common.Impl.International.Checker
             }
 
             // enemy on the way
-            var enemy = GetEnemyOnTheWay(from, to, board);
+            var enemy = GetEnemyPosOnTheWay(from, to, board);
             if (rowDiff == 2 && enemy is not null)
             {
                 return (enemy, true);
             }
 
-            // 1 cell by diagonal
+            // single cell step
             return (null, rowDiff == 1);
         }
 
-        private static Cell? GetEnemyOnTheWay(Cell from, Cell to, IBoard board)
+        private static Cell? GetEnemyPosOnTheWay(Cell from, Cell to, IBoard board)
         {
             var rowDirection = Math.Abs(to.Row - from.Row) / (to.Row - from.Row);
             var colDirection = Math.Abs(to.Col - from.Col) / (to.Col - from.Col);
