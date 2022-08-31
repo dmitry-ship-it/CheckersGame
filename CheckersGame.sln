@@ -7,11 +7,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{7022CB17-663
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{EC09B635-4928-43AB-9C70-CF11258AA5CE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CheckersGame.Common", "CheckersGame.Common\CheckersGame.Common.csproj", "{D411A0BC-6EFE-4217-9E53-F58EDC177653}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CheckersGame.Common", "CheckersGame.Common\CheckersGame.Common.csproj", "{D411A0BC-6EFE-4217-9E53-F58EDC177653}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CheckersGame.Console", "CheckersGame.Console\CheckersGame.Console.csproj", "{DB223F55-0C2C-4242-8B0D-277AFDDF4EFA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CheckersGame.Console", "CheckersGame.Console\CheckersGame.Console.csproj", "{DB223F55-0C2C-4242-8B0D-277AFDDF4EFA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CheckersGame.Api", "CheckersGame.Api\CheckersGame.Api.csproj", "{69D2BD05-7ACC-4B12-ABCA-8C5366F27748}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CheckersGame.Api", "CheckersGame.Api\CheckersGame.Api.csproj", "{69D2BD05-7ACC-4B12-ABCA-8C5366F27748}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

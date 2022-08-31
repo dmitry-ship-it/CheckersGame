@@ -6,7 +6,7 @@ PrintBoard();
 // TODO: REFACTOR ALL THIS SHIT
 while (true)
 {
-    Console.WriteLine($"Now its {game.Turn.Color}'s turn:");
+    Console.WriteLine($"Now its {game.CurrentPlayerTurn.Color}'s turn:");
 
     Console.Write("From: ");
     var from = Console.ReadLine()!.Split(' ').Select(x => int.Parse(x));
@@ -52,12 +52,12 @@ void PrintBoard()
                 Console.Write("  ");
             }
 
-            if (game.Board[i, j]?.Checker?.Color == game.WhitePlayer.Color)
+            if (game.Board[i, j]?.Checker?.Color == game.FirstPlayer.Color)
             {
                 Console.Write(game.Board[i,j].Checker?.ToString() == "Basic" ? "□ " : "◇ ");
             }
 
-            if (game.Board[i, j]?.Checker?.Color == game.BlackPlayer.Color)
+            if (game.Board[i, j]?.Checker?.Color == game.SecondPlayer.Color)
             {
                 Console.Write(game.Board[i, j].Checker?.ToString() == "Basic" ? "■ " : "◆ ");
             }

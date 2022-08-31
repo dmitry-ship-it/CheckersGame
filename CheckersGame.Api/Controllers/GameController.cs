@@ -39,7 +39,7 @@ namespace CheckersGame.Api.Controllers
             return Ok(new
             {
                 Board = _game.Board,
-                Turn = _game.Turn.Color
+                Turn = _game.CurrentPlayerTurn.Color
             });
         }
 

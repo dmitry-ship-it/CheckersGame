@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Drawing;
 
 namespace CheckersGame.Common.Abstractions.Checker
 {
-    public interface IChecker
+    public interface IChecker : ICloneable
     {
-        IMoveset Moveset { get; init; }
+        IMoveset Moveset { get; set; }
 
         Color Color { get; init; }
     }
