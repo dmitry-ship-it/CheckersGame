@@ -2,7 +2,7 @@
 
 namespace CheckersGame.Common.Abstractions.Board
 {
-    public interface IBoard : IEnumerable<IChecker>
+    public interface IBoard : IEnumerable<string?>
     {
         int Rows { get; init; }
         int Cols { get; init; }

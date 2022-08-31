@@ -1,6 +1,7 @@
 using CheckersGame.Api.Controllers;
-using CheckersGame.Common.Implementations.International;
+using CheckersGame.Common.Impl.International;
 using CheckersGame.Common.Abstractions;
+using CheckersGame.Common;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,11 +15,14 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddControllers();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddSingleton<IGame, Game>();
+builder.Services.AddMemoryCache();
+
+builder.Services.AddSingleton<GameFactory>();
 
 var app = builder.Build();
 

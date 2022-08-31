@@ -1,7 +1,9 @@
+using CheckersGame.Api.Core;
 using CheckersGame.Api.Models;
+using CheckersGame.Common;
 using CheckersGame.Common.Abstractions;
 using Microsoft.AspNetCore.Mvc;
-using System.Drawing;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace CheckersGame.Api.Controllers
 {
@@ -9,73 +11,114 @@ namespace CheckersGame.Api.Controllers
     [Route("api/[controller]")]
     public class GameController : ControllerBase
     {
-        private readonly IGame _game;
+        private readonly Dictionary<Guid, bool> _games = new();
+
+        private readonly IMemoryCache _memoryCache;
+        private readonly GameFactory _gameFactory;
         private readonly ILogger<GameController> _logger;
 
-        public GameController(IGame game, ILogger<GameController> logger)
+        public GameController(IMemoryCache memoryCache, GameFactory gameFactory, ILogger<GameController> logger)
         {
-            _game = game;
+            _memoryCache = memoryCache;
+            _gameFactory = gameFactory;
             _logger = logger;
         }
 
-        [HttpPost]
-        public IActionResult Get([FromBody] MoveModel moveModel)
+        [HttpGet("types")]
+        public IActionResult GetGameTypes()
         {
-            // TODO: Refactor?
+            return Ok(Enum.GetValues<GameType>());
+        }
+
+        [HttpGet("pending")]
+        public IActionResult GetPendingGames()
+        {
+            return Ok(_games.Select(pair =>
+            {
+                var game = _memoryCache.Get<IGame>(pair.Key);
+
+                return new
+                {
+                    Id = pair.Key,
+                    Name = nameof(game)
+                };
+            }));
+        }
+
+        [HttpPost("start-new")]
+        public IActionResult StartGame([FromRoute] string gameType)
+        {
+            GameType game;
             try
             {
-                _game.NextTurn((moveModel.From.Row, moveModel.From.Col), (moveModel.To.Row, moveModel.To.Col));
-                _logger.LogInformation("Game moved");
+                game = Enum.Parse<GameType>(gameType);
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException)
             {
-                return Unauthorized(ex.Message);
-            }
-            catch (InvalidOperationException ex)
-            {
-                Ok(ex.Message);
+                return BadRequest();
             }
 
-            return Ok(new
+            var gameId = Guid.NewGuid();
+            var gameInstance = _gameFactory.CreateNew(game);
+            _memoryCache.Set(
+                key: gameId,
+                value: gameInstance,
+                TimeSpan.FromMinutes(20));
+
+            // game pending
+            _games[gameId] = true;
+
+            return Ok(new UpdateModel
             {
-                Board = _game.Board,
-                Turn = _game.CurrentPlayerTurn.Color
+                Id = gameId,
+                Board = gameInstance.Board.AsEnumerable(),
+                CurrentPlayerTurn = gameInstance.CurrentPlayerTurn.Color.Name,
+                IsEnded = false
             });
         }
 
-        [HttpGet("board")]
-        public IActionResult GetBoard()
+        [HttpPost("join")]
+        public IActionResult Join([FromBody] Guid gameId)
         {
-            var list = new List<List<string?>>();
-            for (int i = 0; i < _game.Board.Rows; i++)
+            if (!_games.ContainsKey(gameId))
             {
-                list.Add(new List<string?>());
-                for (int j = 0; j < _game.Board.Cols; j++)
-                {
-                    list[i].Add(
-                        _game.Board[i, j]?.Checker?.Color.Name
-                        + _game.Board[i, j]?.Checker?.ToString());
-                }
+                return BadRequest();
             }
 
-            return Ok(list);
+            // game started
+            _games[gameId] = false;
+            var game = _memoryCache.Get<IGame>(gameId);
+
+            return Ok(new UpdateModel
+            {
+                Id = gameId,
+                Board = game.Board,
+                IsEnded = game.EndMessage is not null
+            });
         }
 
-        [HttpGet("example")]
-        public IActionResult Example()
+        [HttpPost("update")]
+        public IActionResult UpdateGameState([FromBody] MoveModel moveModel)
         {
-            return Ok(new MoveModel()
+            IGame game;
+
+            try
             {
-                From = new()
-                {
-                    Row = 5,
-                    Col = 1
-                },
-                To = new()
-                {
-                    Row = 6,
-                    Col = 2
-                }
+                game = (IGame)_memoryCache.Get(moveModel.GameId);
+                game.NextTurn(moveModel.From, moveModel.To);
+                _logger.LogInformation("Game moved.");
+            }
+            catch (Exception ex) when (ex is ArgumentException or InvalidOperationException)
+            {
+                _logger.LogInformation("Game not moved.");
+                return BadRequest(ex.Message);
+            }
+
+            return Ok(new UpdateModel
+            {
+                Id = moveModel.GameId,
+                Board = game.Board,
+                IsEnded = game.EndMessage is not null
             });
         }
     }

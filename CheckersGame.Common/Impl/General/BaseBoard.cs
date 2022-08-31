@@ -31,13 +31,13 @@ namespace CheckersGame.Common.Impl.General
         public int Rows { get; init; }
         public int Cols { get; init; }
 
-        public IEnumerator<IChecker> GetEnumerator()
+        public IEnumerator<string?> GetEnumerator()
         {
             for (var i = 0; i < Rows; i++)
             {
                 for (var j = 0; j < Cols; j++)
                 {
-                    yield return _board[i, j];
+                    yield return _board[i, j]?.ToString();
                 }
             }
         }
