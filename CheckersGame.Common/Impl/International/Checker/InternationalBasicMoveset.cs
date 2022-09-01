@@ -55,7 +55,7 @@ namespace CheckersGame.Common.Impl.International.Checker
 
             var checker = board[row, col];
 
-            if (checker is not null && checker.Color != board[from].Color)
+            if (checker is not null && checker.Color != board[from]?.Color)
             {
                 return new Cell { Row = row, Col = col };
             }

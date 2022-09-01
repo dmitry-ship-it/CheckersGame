@@ -73,7 +73,7 @@ namespace CheckersGame.Common.Impl.International.Checker
                         continue;
                     }
 
-                    if (board[from].Color == board[i, j].Color)
+                    if (board[from]!.Color == board[i, j]?.Color)
                     {
                         allies++;
                     }

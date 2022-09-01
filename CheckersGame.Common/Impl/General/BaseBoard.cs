@@ -7,22 +7,22 @@ namespace CheckersGame.Common.Impl.General
 {
     internal abstract class BaseBoard : IBoard
     {
-        private readonly IChecker[,] _board;
+        private readonly IChecker?[,] _board;
 
-        protected BaseBoard(IChecker[,] board)
+        protected BaseBoard(IChecker?[,] board)
         {
             _board = board;
             Rows = board.GetLength(0);
             Cols = board.GetLength(1);
         }
 
-        public IChecker this[Cell cell]
+        public IChecker? this[Cell cell]
         {
             get => this[cell.Row, cell.Col];
             set => this[cell.Row, cell.Col] = value;
         }
 
-        public IChecker this[int row, int col]
+        public IChecker? this[int row, int col]
         {
             get => _board[row, col];
             set => _board[row, col] = value;

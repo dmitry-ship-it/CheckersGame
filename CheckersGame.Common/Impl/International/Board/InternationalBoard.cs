@@ -12,7 +12,7 @@ namespace CheckersGame.Common.Impl.International.Board
         {
         }
 
-        private static IChecker[,] GenerateBoard()
+        private static IChecker?[,] GenerateBoard()
         {
             var board = new BaseChecker[10, 10];
 
@@ -23,7 +23,7 @@ namespace CheckersGame.Common.Impl.International.Board
             return board;
         }
 
-        private static void FillRows(IChecker[,] board, int start, int count, IChecker checker)
+        private static void FillRows(IChecker?[,] board, int start, int count, IChecker? checker)
         {
             for (var i = start; i < start + count; i++)
             {
@@ -44,7 +44,7 @@ namespace CheckersGame.Common.Impl.International.Board
                 throw new ArgumentException("This cell is empty", nameof(from));
             }
 
-            var (enemyCell, isLegalMove) = this[from].Moveset.GetInfo(from, to, this);
+            var (enemyCell, isLegalMove) = this[from]!.Moveset.GetInfo(from, to, this);
 
             if (!isLegalMove)
             {
@@ -64,13 +64,13 @@ namespace CheckersGame.Common.Impl.International.Board
 
         private void TryUpgradeChecker(Cell from, Cell to)
         {
-            if (this[from].Color == Color.White && to.Row == Rows - 1)
+            if (this[from]!.Color == Color.White && to.Row == Rows - 1)
             {
-                this[from].Moveset = InternationalStrongMoveset.Instance;
+                this[from]!.Moveset = InternationalStrongMoveset.Instance;
             }
-            else if (this[from].Color == Color.Black && to.Row == 0)
+            else if (this[from]!.Color == Color.Black && to.Row == 0)
             {
-                this[from].Moveset = InternationalStrongMoveset.Instance;
+                this[from]!.Moveset = InternationalStrongMoveset.Instance;
             }
         }
 

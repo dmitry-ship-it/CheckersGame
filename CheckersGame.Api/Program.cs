@@ -1,7 +1,5 @@
-using CheckersGame.Api.Controllers;
-using CheckersGame.Common.Impl.International;
-using CheckersGame.Common.Abstractions;
 using CheckersGame.Common;
+using CheckersGame.Api.Core;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +21,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddMemoryCache();
 
 builder.Services.AddSingleton<GameFactory>();
+builder.Services.AddSingleton<GameContainerFactory>();
 
 var app = builder.Build();
 

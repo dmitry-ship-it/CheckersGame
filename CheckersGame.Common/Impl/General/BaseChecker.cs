@@ -15,7 +15,7 @@ namespace CheckersGame.Common.Impl.General
 
         public Color Color { get; init; }
 
-        public static BaseChecker Empty { get; } = null!;
+        public static IChecker? Empty { get; }
 
         public object Clone()
         {
