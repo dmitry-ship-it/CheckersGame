@@ -1,14 +1,14 @@
-﻿namespace CheckersGame.Api.Models
+﻿using CheckersGame.Common.Abstractions;
+
+namespace CheckersGame.Api.Models
 {
     public class MoveModel
     {
-        public Pair From { get; set; }
-        public Pair To { get; set; }
-    }
+        public Guid GameId { get; set; }
 
-    public struct Pair
-    {
-        public int Row { get; set; }
-        public int Col { get; set; }
+        public Guid PlayerId { get; set; }
+
+        public Cell From { get; set; }
+        public Cell To { get; set; }
     }
 }

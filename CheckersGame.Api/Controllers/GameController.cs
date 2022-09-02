@@ -1,7 +1,7 @@
+using CheckersGame.Api.Core;
 using CheckersGame.Api.Models;
-using CheckersGame.Common.Abstractions;
 using Microsoft.AspNetCore.Mvc;
-using System.Drawing;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace CheckersGame.Api.Controllers
 {
@@ -9,73 +9,122 @@ namespace CheckersGame.Api.Controllers
     [Route("api/[controller]")]
     public class GameController : ControllerBase
     {
-        private readonly IGame _game;
+        private static readonly Dictionary<Guid, bool> _gamesStarted = new();
+
+        private readonly IMemoryCache _cache;
+        private readonly GameContainerFactory _gameFactory;
         private readonly ILogger<GameController> _logger;
 
-        public GameController(IGame game, ILogger<GameController> logger)
+        public GameController(
+            IMemoryCache memoryCache,
+            GameContainerFactory gameFactory,
+            ILogger<GameController> logger)
         {
-            _game = game;
+            _cache = memoryCache;
+            _gameFactory = gameFactory;
             _logger = logger;
         }
 
-        [HttpPost]
-        public IActionResult Get([FromBody] MoveModel moveModel)
+        [HttpGet("types")]
+        public IActionResult GetGameTypes()
         {
-            // TODO: Refactor?
-            try
-            {
-                _game.NextTurn((moveModel.From.Row, moveModel.From.Col), (moveModel.To.Row, moveModel.To.Col));
-                _logger.LogInformation("Game moved");
-            }
-            catch (ArgumentException ex)
-            {
-                return Unauthorized(ex.Message);
-            }
-            catch (InvalidOperationException ex)
-            {
-                Ok(ex.Message);
-            }
+            return Ok(Enum.GetNames<GameType>());
+        }
 
-            return Ok(new
+        [HttpGet("pending")]
+        public IActionResult GetPendingGames()
+        {
+            return Ok(_gamesStarted.Select(pair =>
             {
-                Board = _game.Board,
-                Turn = _game.Turn.Color
+                var gameContainer = _cache.Get<GameContainer>(pair.Key);
+
+                return new PendingGameModel
+                {
+                    GameId = pair.Key,
+                    TypeName = gameContainer.Game
+                        .GetType().Name
+                        .Replace("Game", string.Empty)
+                };
+            }));
+        }
+
+        [HttpPost("new")]
+        public IActionResult StartGame(NewGameModel newGameModel)
+        {
+            var container = _gameFactory.Create(
+                newGameModel.GameType,
+                newGameModel.PlayerName);
+
+            _cache.Set(
+                key: container.GameId,
+                value: container,
+                TimeSpan.FromMinutes(20));
+
+            // set game pending
+            _gamesStarted[container.GameId] = true;
+
+            return Ok(new UpdateModel
+            {
+                Id = container.GameId,
+                PlayerId = container.FirstPlayer.Id,
+                Board = container.Game.Board,
+                CurrentPlayerTurn = container.Game.CurrentPlayerTurn.Color.Name,
+                IsEnded = container.IsEnded
             });
         }
 
-        [HttpGet("board")]
-        public IActionResult GetBoard()
+        [HttpPost("join")]
+        public IActionResult Join([FromBody] JoinModel joinModel)
         {
-            var list = new List<List<string?>>();
-            for (int i = 0; i < _game.Board.Rows; i++)
+            if (!_gamesStarted.ContainsKey(joinModel.GameId))
             {
-                list.Add(new List<string?>());
-                for (int j = 0; j < _game.Board.Cols; j++)
-                {
-                    list[i].Add(
-                        _game.Board[i, j]?.Checker?.Color.Name
-                        + _game.Board[i, j]?.Checker?.ToString());
-                }
+                return BadRequest();
             }
 
-            return Ok(list);
+            if (!_gamesStarted[joinModel.GameId])
+            {
+                return BadRequest("Game already started.");
+            }
+
+            // game started
+            _gamesStarted[joinModel.GameId] = false;
+            var gameContainer = _cache.Get<GameContainer>(joinModel.GameId);
+            gameContainer.SecondPlayer.Name = joinModel.SecondPlayerName!;
+
+            return Ok(new UpdateModel
+            {
+                Id = joinModel.GameId,
+                PlayerId = gameContainer.SecondPlayer.Id,
+                Board = gameContainer.Game.Board,
+                CurrentPlayerTurn = gameContainer.Game.CurrentPlayerTurn.Color.Name,
+                IsEnded = gameContainer.IsEnded
+            });
         }
 
-        [HttpGet("example")]
-        public IActionResult Example()
+        [HttpPost("update")]
+        public IActionResult UpdateGameState([FromBody] MoveModel moveModel)
         {
-            return Ok(new MoveModel()
+            GameContainer gameContainer;
+
+            try
             {
-                From = new()
-                {
-                    Row = 5,
-                    Col = 1
-                },
-                To = new()
-                {
-                    Row = 6,
-                    Col = 2
-                }
+                gameContainer = _cache.Get<GameContainer>(moveModel.GameId);
+                _logger.LogInformation("In game (id = {GameId}) player.", gameContainer.GameId);
+                gameContainer.Game.NextTurn(moveModel.From, moveModel.To);
+            }
+            catch (Exception ex) when (ex is ArgumentException or InvalidOperationException)
+            {
+                _logger.LogInformation("Game not moved.");
+                return BadRequest(ex.Message);
+            }
+
+            return Ok(new UpdateModel
+            {
+                Id = moveModel.GameId,
+                PlayerId = moveModel.PlayerId,
+                Board = gameContainer.Game.Board,
+                CurrentPlayerTurn = gameContainer.Game.CurrentPlayerTurn.Color.Name,
+                IsEnded = gameContainer.IsEnded
             });
         }
     }
