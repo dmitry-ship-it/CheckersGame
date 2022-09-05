@@ -28,31 +28,44 @@ namespace CheckersGame.Api.Controllers
         [HttpGet("types")]
         public IActionResult GetGameTypes()
         {
+            _logger.LogInformation("Total games count: {Count}", _gamesStarted.Count);
             return Ok(Enum.GetNames<GameType>());
         }
 
         [HttpGet("pending")]
         public IActionResult GetPendingGames()
         {
+            _logger.LogInformation("Pending games.");
+
             return Ok(_gamesStarted.Select(pair =>
             {
-                var gameContainer = _cache.Get<GameContainer>(pair.Key);
+                if (!_cache.TryGetValue<GameContainer>(pair.Key, out var gameContainer))
+                {
+                    _gamesStarted.Remove(pair.Key);
+                    return null;
+                }
 
                 return new PendingGameModel
                 {
                     GameId = pair.Key,
-                    TypeName = gameContainer.Game
+                    GameType = gameContainer.Game
                         .GetType().Name
-                        .Replace("Game", string.Empty)
+                        .Replace("Game", string.Empty),
+                    FirstPlayerName = gameContainer.FirstPlayer.Name
                 };
-            }));
+            }).Where(val => val != null));
         }
 
         [HttpPost("new")]
         public IActionResult StartGame(NewGameModel newGameModel)
         {
+            if (!Enum.TryParse<GameType>(newGameModel.GameType, out var gameType))
+            {
+                return BadRequest();
+            }
+
             var container = _gameFactory.Create(
-                newGameModel.GameType,
+                gameType,
                 newGameModel.PlayerName);
 
             _cache.Set(

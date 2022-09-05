@@ -64,11 +64,11 @@ namespace CheckersGame.Common.Impl.International.Board
 
         private void TryUpgradeChecker(Cell from, Cell to)
         {
-            if (this[from]!.Color == Color.White && to.Row == Rows - 1)
+            if (this[from]!.Color == Color.White && to.Row == 0)
             {
                 this[from]!.Moveset = InternationalStrongMoveset.Instance;
             }
-            else if (this[from]!.Color == Color.Black && to.Row == 0)
+            else if (this[from]!.Color == Color.Black && to.Row == Rows - 1)
             {
                 this[from]!.Moveset = InternationalStrongMoveset.Instance;
             }

@@ -1,7 +1,13 @@
 using CheckersGame.Common;
 using CheckersGame.Api.Core;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Logging.ClearProviders();
+builder.Logging.AddSerilog(new LoggerConfiguration()
+    .WriteTo.Console()
+    .CreateLogger());
 
 // Add services to the container.
 builder.Services.AddCors(options =>

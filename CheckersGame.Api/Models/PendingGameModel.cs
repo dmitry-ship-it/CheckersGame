@@ -4,6 +4,8 @@
     {
         public Guid GameId { get; set; }
 
-        public string TypeName { get; set; } = default!;
+        public string GameType { get; set; } = default!;
+
+        public string? FirstPlayerName { get; set; }
     }
 }
