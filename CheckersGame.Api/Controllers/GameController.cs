@@ -56,6 +56,32 @@ namespace CheckersGame.Api.Controllers
             }).Where(val => val != null));
         }
 
+        [HttpPost("updated")]
+        public IActionResult GetUpdatedGame([FromBody] MoveModel updateModel)
+        {
+            GameContainer gameContainer;
+
+            try
+            {
+                gameContainer = _cache.Get<GameContainer>(updateModel.GameId);
+                _logger.LogInformation("Get updated game by (id = {GameId}) player.", gameContainer.GameId);
+                // TODO: Encapsulate 'NextTurn' logic to GameContainer
+            }
+            catch (Exception ex) when (ex is ArgumentException or InvalidOperationException)
+            {
+                return BadRequest(ex.Message);
+            }
+
+            return Ok(new UpdateModel
+            {
+                Id = updateModel.GameId,
+                PlayerId = updateModel.PlayerId,
+                Board = gameContainer.Game.Board,
+                CurrentPlayerTurn = gameContainer.Game.CurrentPlayerTurn.Color.Name,
+                IsEnded = gameContainer.IsEnded
+            });
+        }
+
         [HttpPost("new")]
         public IActionResult StartGame(NewGameModel newGameModel)
         {
@@ -123,7 +149,14 @@ namespace CheckersGame.Api.Controllers
             {
                 gameContainer = _cache.Get<GameContainer>(moveModel.GameId);
                 _logger.LogInformation("In game (id = {GameId}) player.", gameContainer.GameId);
-                gameContainer.Game.NextTurn(moveModel.From, moveModel.To);
+
+                if (gameContainer.PlayerTurnId != moveModel.PlayerId)
+                {
+                    throw new ArgumentException("This player can't touch this checker.");
+                }
+
+                // TODO: Encapsulate 'NextTurn' logic to GameContainer
+                gameContainer.MoveGameByContainer(moveModel.From, moveModel.To);
             }
             catch (Exception ex) when (ex is ArgumentException or InvalidOperationException)
             {

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CurrentGame } from "./pending-list";
 
 interface Selected {
@@ -31,13 +31,12 @@ const cellLightBgColor = "bg-white";
 const cellFirstSelectedBgColor = "bg-orange-500";
 const cellSecondSelectedBgColor = "bg-red-500";
 
-const sendStep = async (game: CurrentGame) => {
-
+const getUpdateGameModel = (game: CurrentGame) => {
   if (selected.first === null || selected.second === null) {
     throw Error("Cells are not selected.");
   }
 
-  let step: UpdateGameModel = {
+  return {
     gameId: game.id,
     playerId: game.playerId,
     from: {
@@ -49,7 +48,24 @@ const sendStep = async (game: CurrentGame) => {
       col: Number.parseInt(selected.second.id[1]),
     }
   }
+}
 
+// TODO: merge with 'sendStep'
+const updateGame = async (game: CurrentGame) => {
+  const step: UpdateGameModel = getUpdateGameModel(game);
+  const response = await fetch("https://localhost:7167/api/game/updated", {
+    method: "POST",
+    body: JSON.stringify(step),
+    headers: {
+      "Content-type": "application/json; charset=UTF-8",
+    }
+  });
+  setCurrentGameCallback(await response.json());
+} 
+
+// TODO: merge with 'updateGame'
+const sendStep = async (game: CurrentGame) => {
+  const step: UpdateGameModel = getUpdateGameModel(game);
   const response = await fetch("https://localhost:7167/api/game/update", {
     method: "POST",
     body: JSON.stringify(step),
@@ -165,6 +181,7 @@ export default function GameField(game: CurrentGame) {
   const [isFirstSelected, setIsFirstSelected] = useState(false);
   const [isSecondSelected, setIsSecondSelected] = useState(false);
   const [currentGame, setCurrentGame] = useState(game);
+  //const [state, setState] = useState(0);
 
   setFirstSelectedCallback = setIsFirstSelected;
   setSecondSelectedCallback = setIsSecondSelected;
@@ -172,6 +189,13 @@ export default function GameField(game: CurrentGame) {
 
   const field = getField(currentGame.board);
   const formatter = new Intl.NumberFormat('en-US', {minimumIntegerDigits: 2});
+
+  // TODO: user long polling with SignalR
+  useEffect(() => {
+    setInterval(() => {
+      updateGame(currentGame);
+    }, 2000)
+  },[]);
 
   return (
     <div className="mx-auto flex flex-wrap flex-col">

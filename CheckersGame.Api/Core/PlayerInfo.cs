@@ -2,7 +2,7 @@
 {
     public class PlayerInfo
     {
-        public Guid Id => Guid.NewGuid();
+        public Guid Id { get; } = Guid.NewGuid();
 
         public string Name { get; set; }
 
