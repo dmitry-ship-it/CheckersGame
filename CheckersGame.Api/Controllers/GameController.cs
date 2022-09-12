@@ -173,14 +173,16 @@ namespace CheckersGame.Api.Controllers
                moveModel.PlayerId, moveModel.PlayerId);
 
             // TODO: move object creation
-            return Ok(new UpdateModel
-            {
-                Id = moveModel.GameId,
-                PlayerId = moveModel.PlayerId,
-                Board = gameContainer.Board,
-                CurrentPlayerTurn = gameContainer.CurrentPlayerTurn.Id.ToString(),
-                IsEnded = gameContainer.IsEnded
-            });
+            //return Ok(new UpdateModel
+            //{
+            //    Id = moveModel.GameId,
+            //    PlayerId = moveModel.PlayerId,
+            //    Board = gameContainer.Board,
+            //    CurrentPlayerTurn = gameContainer.CurrentPlayerTurn.Id.ToString(),
+            //    IsEnded = gameContainer.IsEnded
+            //});
+
+            return Ok();
         }
 
         [HttpPost("updated")]

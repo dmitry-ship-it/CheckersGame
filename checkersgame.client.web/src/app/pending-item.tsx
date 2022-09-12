@@ -1,34 +1,9 @@
 import { startGame } from "../App";
 import { playerName } from "../header/navbar";
-import { PendingGame } from "./pending-list";
-
-export interface JoinModel {
-  gameId: string;
-  secondPlayerName: string;
-}
-
-let pendingGame: PendingGame;
-
-const sendJoinRequest = async () => {
-  let joinModel: JoinModel = {
-    gameId: pendingGame.gameId,
-    secondPlayerName: playerName,
-  };
-
-  const response = await fetch("https://localhost:7167/api/game/join", {
-    method: "POST",
-    headers: {
-      "Content-type": "application/json; charset=UTF-8",
-    },
-    body: JSON.stringify(joinModel),
-  });
-
-  startGame(await response.json());
-};
+import ApiRouter from "./utils/router";
+import { PendingGame } from "./utils/types";
 
 export default function PendingItem(game: PendingGame) {
-  pendingGame = game;
-
   return (
     <div className="bg-neutral-500 text-gray-200 m-2 px-3 rounded-lg flex flex-wrap justify-between">
       <div className="mr-20">
@@ -37,7 +12,16 @@ export default function PendingItem(game: PendingGame) {
           <span className="text-white font-semibold">{game.firstPlayerName}</span> is waiting for opponent
         </div>
       </div>
-      <button className="bg-green-600 text-white font-semibold h-9 px-3 place-self-center rounded-lg" onClick={sendJoinRequest}>
+      <button
+        className="bg-green-600 text-white font-semibold h-9 px-3 place-self-center rounded-lg"
+        onClick={async () => {
+          startGame(
+            await ApiRouter.post("join", {
+              gameId: game.gameId,
+              secondPlayerName: playerName,
+            })
+          );
+        }}>
         Join
       </button>
     </div>

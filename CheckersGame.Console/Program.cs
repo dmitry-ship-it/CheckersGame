@@ -1,12 +1,13 @@
-﻿using CheckersGame.Common.Implementations.International;
+﻿using CheckersGame.Common.Extensions;
+using CheckersGame.Common.Impl.International;
 
-var game = new Game();
+var game = new InternationalGame();
 PrintBoard();
 
 // TODO: REFACTOR ALL THIS SHIT
 while (true)
 {
-    Console.WriteLine($"Now its {game.CurrentPlayerTurn.Color}'s turn:");
+    Console.WriteLine($"Now its {game.CurrentPlayerTurn.Color.Name}'s turn:");
 
     Console.Write("From: ");
     var from = Console.ReadLine()!.Split(' ').Select(x => int.Parse(x));
@@ -20,7 +21,7 @@ while (true)
 
     try
     {
-        game.NextTurn((from.First(), from.Last()), (to.First(), to.Last()));
+        game.NextTurn(from.ToCell(), to.ToCell());
     }
     catch (Exception ex)
     {
@@ -47,19 +48,19 @@ void PrintBoard()
 
         for (int j = 0; j < game.Board.Cols; j++)
         {
-            if (game.Board[i, j]?.Checker is null)
+            if (game.Board[i, j] is null)
             {
                 Console.Write("  ");
             }
 
-            if (game.Board[i, j]?.Checker?.Color == game.FirstPlayer.Color)
+            if (game.Board[i, j]?.Color == game.Players.First.Color)
             {
-                Console.Write(game.Board[i,j].Checker?.ToString() == "Basic" ? "□ " : "◇ ");
+                Console.Write(game.Board[i,j]!.ToString()!.StartsWith("Basic") ? "□ " : "◇ ");
             }
 
-            if (game.Board[i, j]?.Checker?.Color == game.SecondPlayer.Color)
+            if (game.Board[i, j]?.Color == game.Players.Second.Color)
             {
-                Console.Write(game.Board[i, j].Checker?.ToString() == "Basic" ? "■ " : "◆ ");
+                Console.Write(game.Board[i, j]!.ToString()!.StartsWith("Basic") ? "■ " : "◆ ");
             }
         }
 
