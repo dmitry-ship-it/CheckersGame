@@ -6,23 +6,31 @@ interface Selected {
   second: Element | null;
 }
 
-interface UpdateGameModel {
+interface StepGameModel {
   gameId: string;
   playerId: string;
   from: {
-    row: number,
-    col: number
-  },
+    row: number;
+    col: number;
+  };
   to: {
-    row: number,
-    col: number
-  }
+    row: number;
+    col: number;
+  };
+}
+
+interface UpdateGameModel {
+  gameId: string;
+  playerId: string;
+  board: (string | null)[];
 }
 
 let selected: Selected = { first: null, second: null };
+let isGameAutoUpdating = false;
+let gameState: CurrentGame;
 
-let setFirstSelectedCallback : any;
-let setSecondSelectedCallback : any;
+let setFirstSelectedCallback: any;
+let setSecondSelectedCallback: any;
 let setCurrentGameCallback: any;
 
 const cellDarkBgColor = "bg-neutral-500";
@@ -31,7 +39,7 @@ const cellLightBgColor = "bg-white";
 const cellFirstSelectedBgColor = "bg-orange-500";
 const cellSecondSelectedBgColor = "bg-red-500";
 
-const getUpdateGameModel = (game: CurrentGame) => {
+const getStepGameModel = (game: CurrentGame) => {
   if (selected.first === null || selected.second === null) {
     throw Error("Cells are not selected.");
   }
@@ -46,39 +54,55 @@ const getUpdateGameModel = (game: CurrentGame) => {
     to: {
       row: Number.parseInt(selected.second.id[0]),
       col: Number.parseInt(selected.second.id[1]),
-    }
-  }
-}
+    },
+  };
+};
 
-// TODO: merge with 'sendStep'
-const updateGame = async (game: CurrentGame) => {
-  const step: UpdateGameModel = getUpdateGameModel(game);
-  const response = await fetch("https://localhost:7167/api/game/updated", {
-    method: "POST",
-    body: JSON.stringify(step),
-    headers: {
-      "Content-type": "application/json; charset=UTF-8",
-    }
-  });
-  setCurrentGameCallback(await response.json());
-} 
-
-// TODO: merge with 'updateGame'
 const sendStep = async (game: CurrentGame) => {
-  const step: UpdateGameModel = getUpdateGameModel(game);
+  const step: StepGameModel = getStepGameModel(game);
   const response = await fetch("https://localhost:7167/api/game/update", {
     method: "POST",
     body: JSON.stringify(step),
     headers: {
       "Content-type": "application/json; charset=UTF-8",
-    }
+    },
   });
 
-  const data = await response.json();
+  const data: CurrentGame = await response.json();
+  gameState = data;
 
   resetSelectedObj();
   setCurrentGameCallback(data);
-}
+};
+
+const updateGame = async () => {
+  console.warn("Fetching game update...");
+  const gameInfo: UpdateGameModel = {
+    gameId: gameState.id,
+    playerId: gameState.playerId,
+    board: gameState.board,
+  };
+
+  const response = await fetch("https://localhost:7167/api/game/updated", {
+    method: "POST",
+    body: JSON.stringify(gameInfo),
+    headers: {
+      "Content-type": "application/json; charset=UTF-8",
+    },
+  });
+
+  if (response.status !== 200) {
+    console.warn(`Fetching game error (${response.status}). Continuing...`);
+    await updateGame();
+  } else {
+    console.log("Game update fetched!");
+    const data: CurrentGame = await response.json();
+    gameState = data;
+    setCurrentGameCallback(data);
+  }
+
+  await updateGame();
+};
 
 const getField = (board: (string | null)[]) => {
   const side = Math.sqrt(board.length);
@@ -94,24 +118,22 @@ const getField = (board: (string | null)[]) => {
   }
 
   return field;
-}
+};
 
 const clearBgColor = (element: Element) => {
-  element.classList.forEach(className => {
+  element.classList.forEach((className) => {
     if (className.startsWith("bg-")) {
       element.classList.remove(className);
     }
   });
-}
+};
 
 const getCellColorByIdStr = (id: string) => {
   return getCellColorByIdNum(Number.parseInt(id));
 };
 
 const getCellColorByIdNum = (id: number) => {
-  return (Math.floor(id / 10) + id % 10) % 2 === 1
-    ? cellDarkBgColor
-    : cellLightBgColor;
+  return (Math.floor(id / 10) + (id % 10)) % 2 === 1 ? cellDarkBgColor : cellLightBgColor;
 };
 
 const getCheckerImage = (description: string | null) => {
@@ -123,26 +145,23 @@ const getCheckerImage = (description: string | null) => {
 
   switch (description) {
     case "BasicBlack":
-      path = "./basic-black-checker.png";
+      path = "./assets/basic-black-checker.png";
       break;
     case "BasicWhite":
-      path = "./basic-white-checker.png";
+      path = "./assets/basic-white-checker.png";
       break;
     case "StrongBlack":
-      path = "./strong-black-checker.png";
+      path = "./assets/strong-black-checker.png";
       break;
     case "StrongWhite":
-      path = "./strong-white-checker.png";
+      path = "./assets/strong-white-checker.png";
       break;
   }
 
-  return path !== null 
-    ? <img className="h-3/4 w-3/4 m-auto" src={path} alt={description} />
-    : <div>{description}</div>
-}
+  return path !== null ? <img className="h-3/4 w-3/4 m-auto" src={path} alt={description} /> : <div>{description}</div>;
+};
 
 const resetSelectedObj = () => {
-
   if (selected.first === null || selected.second === null) return;
 
   clearBgColor(selected.first);
@@ -155,10 +174,9 @@ const resetSelectedObj = () => {
 
   setFirstSelectedCallback(false);
   setSecondSelectedCallback(false);
-}
+};
 
-const selectCell = (event : React.MouseEvent) => {
-
+const selectCell = (event: React.MouseEvent) => {
   if (selected.first == null) {
     selected.first = event.currentTarget;
     clearBgColor(selected.first);
@@ -177,26 +195,32 @@ const selectCell = (event : React.MouseEvent) => {
 };
 
 export default function GameField(game: CurrentGame) {
+  gameState = game;
 
   const [isFirstSelected, setIsFirstSelected] = useState(false);
   const [isSecondSelected, setIsSecondSelected] = useState(false);
   const [currentGame, setCurrentGame] = useState(game);
-  //const [state, setState] = useState(0);
 
   setFirstSelectedCallback = setIsFirstSelected;
   setSecondSelectedCallback = setIsSecondSelected;
   setCurrentGameCallback = setCurrentGame;
 
   const field = getField(currentGame.board);
-  const formatter = new Intl.NumberFormat('en-US', {minimumIntegerDigits: 2});
+  const formatter = new Intl.NumberFormat("en-US", { minimumIntegerDigits: 2 });
 
-  // TODO: user long polling with SignalR
   useEffect(() => {
-    setInterval(() => {
-      updateGame(currentGame);
-    }, 2000)
-  },[]);
+    if (!isGameAutoUpdating) {
+      isGameAutoUpdating = true;
+      updateGame();
+    }
+  }, [currentGame]);
 
+  // FIXME: seems there is SignalRContext.Provider need some sort of token
+  // what about adding IsRequested to response model for each player (with game field)
+  // if another player does not requested game update endpoint will wait for 1 min?
+  // long polling using basic JS fetch: https://javascript.info/long-polling.
+  // X TODO: remove 'SignalRContext.Provider' and all other SignalR things.
+  // TODO: Move table to separate file
   return (
     <div className="mx-auto flex flex-wrap flex-col">
       <table className="mx-auto">
@@ -205,17 +229,24 @@ export default function GameField(game: CurrentGame) {
             <tr>
               {row.map((cell, j) => {
                 const cellId = i * field.length + j;
-                return <td className={"border-2 border-black h-20 w-20 text-center " 
-                  + getCellColorByIdNum(cellId)}
-                  onClick={(e) => selectCell(e)}
-                  id={formatter.format(cellId)}>{getCheckerImage(cell)}</td>
+                return (
+                  <td
+                    className={"border-2 border-black h-20 w-20 text-center " + getCellColorByIdNum(cellId)}
+                    onClick={(e) => selectCell(e)}
+                    id={formatter.format(cellId)}>
+                    {getCheckerImage(cell)}
+                  </td>
+                );
               })}
             </tr>
           );
         })}
       </table>
-      <button className="border-2 border-black bg-green-600 rounded-lg my-4 px-2 py-1 flex place-self-center w-fit"
-              onClick={() => sendStep(currentGame)}>Send</button>
+      <button
+        className="border-2 border-black bg-green-600 rounded-lg my-4 px-2 py-1 flex place-self-center w-fit"
+        onClick={() => sendStep(currentGame)}>
+        Send
+      </button>
     </div>
   );
 }

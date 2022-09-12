@@ -64,24 +64,23 @@ namespace CheckersGame.Common.Impl.International.Checker
 
             Cell? pos = null;
 
-            for (var i = from.Row + rowDirection; i < to.Row; i += rowDirection)
+            for (int i = from.Row + rowDirection, j = from.Col + colDirection;
+                i != to.Row && j != to.Col;
+                i += rowDirection, j += colDirection)
             {
-                for (var j = from.Col + colDirection; j < to.Col; j += colDirection)
+                if (board[i, j] == BaseChecker.Empty)
                 {
-                    if (board[i, j] == BaseChecker.Empty)
-                    {
-                        continue;
-                    }
+                    continue;
+                }
 
-                    if (board[from]!.Color == board[i, j]?.Color)
-                    {
-                        allies++;
-                    }
-                    else
-                    {
-                        enemies++;
-                        pos ??= new Cell { Row = i, Col = j };
-                    }
+                if (board[from]!.Color == board[i, j]!.Color)
+                {
+                    allies++;
+                }
+                else
+                {
+                    enemies++;
+                    pos ??= new Cell { Row = i, Col = j };
                 }
             }
 

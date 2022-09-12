@@ -1,6 +1,8 @@
 using CheckersGame.Common;
 using CheckersGame.Api.Core;
 using Serilog;
+using CheckersGame.Api.Controllers;
+using Microsoft.AspNetCore.Builder;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,7 +11,8 @@ builder.Logging.AddSerilog(new LoggerConfiguration()
     .WriteTo.Console()
     .CreateLogger());
 
-// Add services to the container.
+builder.Services.AddControllers();
+
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
@@ -17,8 +20,6 @@ builder.Services.AddCors(options =>
         policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
     });
 });
-
-builder.Services.AddControllers();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

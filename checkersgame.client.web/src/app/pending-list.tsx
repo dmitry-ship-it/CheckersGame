@@ -1,4 +1,4 @@
-import { playerName } from "../top/navbar";
+import { playerName } from "../header/navbar";
 import PendingItem from "./pending-item";
 import { useEffect, useState } from "react";
 import { startGame } from "../App";
@@ -27,9 +27,11 @@ let gameRequestBody: NewGameRequestModel = {
   playerName: "",
 };
 
-const addGame = async (fetchGamesCallback: any) => {
+let isGamesAutoloading = false;
+
+const addGame = async () => {
   gameRequestBody.playerName = playerName;
-  
+
   const response = await fetch("https://localhost:7167/api/game/new", {
     method: "POST",
     body: JSON.stringify(gameRequestBody),
@@ -43,29 +45,50 @@ const addGame = async (fetchGamesCallback: any) => {
   console.log("Created.");
 };
 
-function PendingList() {
+export default function PendingList() {
+  // game types loading and updating
   const [gameTypes, setGameTypes] = useState<string[]>([]);
   const fetchTypes = async () => {
+    console.warn("Fetching game types...");
     const response = await fetch("https://localhost:7167/api/game/types");
     const data = await response.json();
     setGameTypes(data);
     gameRequestBody.gameType = data.at(0);
   };
-
-  const [pendingGames, setPendingGames] = useState<PendingGame[]>([]);
-  const fetchGames = async () => {
-    const response = await fetch("https://localhost:7167/api/game/pending");
-    const data = await response.json();
-    setPendingGames(data);
-  };
-
   useEffect(() => {
     fetchTypes();
   }, []);
 
+  // pending games loading and updating
+  const [pendingGames, setPendingGames] = useState<PendingGame[]>([]);
   useEffect(() => {
-    fetchGames();
-  }, []);
+    if (!isGamesAutoloading) {
+      isGamesAutoloading = true;
+      const fetchGames = async (games: PendingGame[]) => {
+        console.warn("Fetching games... Now games is " + JSON.stringify(games));
+        const response = await fetch("https://localhost:7167/api/game/pending", {
+          method: "POST",
+          headers: {
+            "Content-type": "application/json; charset=UTF-8",
+          },
+          body: JSON.stringify(games),
+        });
+
+        if (response.status !== 200) {
+          console.warn("Fetch pending games list error");
+          await fetchGames(games);
+        } else {
+          const data = await response.json();
+          setPendingGames(data);
+          games = data;
+        }
+
+        await fetchGames(games);
+      };
+
+      fetchGames(pendingGames);
+    }
+  }, [pendingGames]);
 
   return (
     <div className="border-2 p-2 w-fit mx-auto">
@@ -84,16 +107,10 @@ function PendingList() {
             return <option value={gameType}>{gameType}</option>;
           })}
         </select>
-        <button
-          className="text-white bg-green-600 font-black w-10 h-10 rounded-lg"
-          onClick={() => {
-            addGame(fetchGames);
-          }}>
+        <button className="text-white bg-green-600 font-black w-10 h-10 rounded-lg" onClick={addGame}>
           &#xFF0B;
         </button>
       </div>
     </div>
   );
 }
-
-export default PendingList;

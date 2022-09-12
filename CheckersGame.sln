@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CheckersGame.Console", "Che
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CheckersGame.Api", "CheckersGame.Api\CheckersGame.Api.csproj", "{69D2BD05-7ACC-4B12-ABCA-8C5366F27748}"
 EndProject
+Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "CheckersGame.Client.Web", "checkersgame.client.web\CheckersGame.Client.Web.njsproj", "{FA045E1B-6EA8-4566-B550-410D6BB5EE02}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,6 +33,10 @@ Global
 		{69D2BD05-7ACC-4B12-ABCA-8C5366F27748}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{69D2BD05-7ACC-4B12-ABCA-8C5366F27748}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{69D2BD05-7ACC-4B12-ABCA-8C5366F27748}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FA045E1B-6EA8-4566-B550-410D6BB5EE02}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA045E1B-6EA8-4566-B550-410D6BB5EE02}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA045E1B-6EA8-4566-B550-410D6BB5EE02}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA045E1B-6EA8-4566-B550-410D6BB5EE02}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -39,6 +45,7 @@ Global
 		{D411A0BC-6EFE-4217-9E53-F58EDC177653} = {7022CB17-6635-47AE-ADEE-1AFD7642ABB6}
 		{DB223F55-0C2C-4242-8B0D-277AFDDF4EFA} = {7022CB17-6635-47AE-ADEE-1AFD7642ABB6}
 		{69D2BD05-7ACC-4B12-ABCA-8C5366F27748} = {7022CB17-6635-47AE-ADEE-1AFD7642ABB6}
+		{FA045E1B-6EA8-4566-B550-410D6BB5EE02} = {7022CB17-6635-47AE-ADEE-1AFD7642ABB6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F6E943CD-1610-407F-BA07-6F68712845AA}

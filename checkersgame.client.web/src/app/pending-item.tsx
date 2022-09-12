@@ -1,5 +1,5 @@
 import { startGame } from "../App";
-import { playerName } from "../top/navbar";
+import { playerName } from "../header/navbar";
 import { PendingGame } from "./pending-list";
 
 export interface JoinModel {
@@ -10,22 +10,21 @@ export interface JoinModel {
 let pendingGame: PendingGame;
 
 const sendJoinRequest = async () => {
-
   let joinModel: JoinModel = {
     gameId: pendingGame.gameId,
-    secondPlayerName: playerName
-  }
+    secondPlayerName: playerName,
+  };
 
   const response = await fetch("https://localhost:7167/api/game/join", {
     method: "POST",
     headers: {
       "Content-type": "application/json; charset=UTF-8",
     },
-    body: JSON.stringify(joinModel)
-  })
+    body: JSON.stringify(joinModel),
+  });
 
   startGame(await response.json());
-}
+};
 
 export default function PendingItem(game: PendingGame) {
   pendingGame = game;
@@ -38,8 +37,9 @@ export default function PendingItem(game: PendingGame) {
           <span className="text-white font-semibold">{game.firstPlayerName}</span> is waiting for opponent
         </div>
       </div>
-      <button className="bg-green-600 text-white font-semibold h-9 px-3 place-self-center rounded-lg"
-              onClick={sendJoinRequest}>Join</button>
+      <button className="bg-green-600 text-white font-semibold h-9 px-3 place-self-center rounded-lg" onClick={sendJoinRequest}>
+        Join
+      </button>
     </div>
   );
 }

@@ -1,42 +1,84 @@
 ﻿using CheckersGame.Api.Models;
 using CheckersGame.Common;
 using CheckersGame.Common.Abstractions;
+using CheckersGame.Common.Abstractions.Board;
 
 namespace CheckersGame.Api.Core
 {
+    // TODO: Rename with 'GameManager'. Also rename all variable names of this type.
     public class GameContainer
     {
+        private readonly IGame _game;
+
+        public GameContainer(IGame game, PlayerInfo firstPlayer, PlayerInfo secondPlayer)
+        {
+            _game = game;
+            FirstPlayer = firstPlayer;
+            SecondPlayer = secondPlayer;
+
+            CurrentPlayerTurn = FirstPlayer;
+
+            PushTurnToNextPlayer();
+        }
+
         public Guid GameId { get; } = Guid.NewGuid();
 
-        public Guid PlayerTurnId { get; private set; }
+        public PlayerInfo CurrentPlayerTurn { get; private set; }
 
         public PlayerInfo FirstPlayer { get; set; }
         public PlayerInfo SecondPlayer { get; set; }
 
-        public IGame Game { get; init; }
+        public IBoard Board => _game.Board;
 
-        public bool IsEnded => Game.EndMessage is null;
+        public bool IsEnded => _game.EndMessage is null;
 
-        public void MoveGameByContainer(Cell from, Cell to)
+        // TODO: Replace implementation with GameType enum name
+        public string GameType =>
+            _game.GetType().Name.Replace("Game", string.Empty);
+
+        public void NextTurn(Cell from, Cell to)
         {
-            Game.NextTurn(from, to);
+            _game.NextTurn(from, to);
             PushTurnToNextPlayer();
         }
 
-        public GameContainer(IGame game, PlayerInfo firstPlayer, PlayerInfo secondPlayer)
+        public PlayerInfo GetEnemyForPlayer(Guid enemyPlayerId)
         {
-            Game = game;
-            FirstPlayer = firstPlayer;
-            SecondPlayer = secondPlayer;
-
-            PushTurnToNextPlayer();
+            if (FirstPlayer.Id == enemyPlayerId)
+            {
+                return SecondPlayer;
+            }
+            else if (SecondPlayer.Id == enemyPlayerId)
+            {
+                return FirstPlayer;
+            }
+            else
+            {
+                throw new ArgumentException("There is no player with this id.", nameof(enemyPlayerId));
+            }
+        }
+        // TODO: Merge this two methods --^ --v
+        public PlayerInfo GetPlayerById(Guid id)
+        {
+            if (FirstPlayer.Id == id)
+            {
+                return FirstPlayer;
+            }
+            else if (SecondPlayer.Id == id)
+            {
+                return SecondPlayer;
+            }
+            else
+            {
+                throw new ArgumentException("There is no player with this id.", nameof(id));
+            }
         }
 
         private void PushTurnToNextPlayer()
         {
-            PlayerTurnId = Game.Players.First == Game.CurrentPlayerTurn
-                ? FirstPlayer.Id
-                : SecondPlayer.Id;
+            CurrentPlayerTurn = _game.Players.First == _game.CurrentPlayerTurn
+                ? FirstPlayer
+                : SecondPlayer;
         }
     }
 }

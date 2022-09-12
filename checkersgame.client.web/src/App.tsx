@@ -2,7 +2,7 @@ import { useState } from "react";
 //import logo from "./logo.svg";
 import "./App.css";
 import PendingList, { CurrentGame } from "./app/pending-list";
-import GameField from "./app/GameField";
+import GameField from "./app/game-field";
 
 let setGameFunc: any;
 
@@ -11,7 +11,6 @@ export const startGame = (gameModel: CurrentGame) => {
 };
 
 export default function App() {
-
   const [game, setGame] = useState<CurrentGame | null>(null);
 
   setGameFunc = setGame;
