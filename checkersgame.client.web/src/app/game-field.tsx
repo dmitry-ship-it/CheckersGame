@@ -44,34 +44,40 @@ export default function GameField(game: Game) {
   const formatter = new Intl.NumberFormat("en-US", { minimumIntegerDigits: 2 });
 
   return (
-    <div className="mx-auto flex flex-wrap flex-col">
-      <table className="mx-auto">
-        {field.map((row, i) => {
-          return (
-            <tr>
-              {row.map((cell, j) => {
-                const cellId = i * field.length + j;
-                return (
-                  <td
-                    className={`border-2 border-black h-20 w-20 text-center ${getCellColorById(cellId)}`}
-                    onClick={(e) => selectNextCell(e, selectedCells)}
-                    id={formatter.format(cellId)}>
-                    {getCheckerImageNode(cell)}
-                  </td>
-                );
-              })}
-            </tr>
-          );
-        })}
-      </table>
-      <button
-        className="border-2 border-black bg-green-600 rounded-lg my-4 px-2 py-1 flex place-self-center w-fit"
-        onClick={async () => {
-          await ApiRouter.post("update", getStepGameModel(currentGame, selectedCells));
-          resetSelectedCells(selectedCells);
-        }}>
-        Send
-      </button>
+    <div className="flex flex-row justify-center">
+      <div className="flex flex-col justify-around pr-10">
+        <div>{game.playerId}</div>
+        <div className="justify-center">Me</div>
+      </div>
+      <div className="flex flex-col">
+        <table className="mx-auto">
+          {field.map((row, i) => {
+            return (
+              <tr>
+                {row.map((cell, j) => {
+                  const cellId = i * field.length + j;
+                  return (
+                    <td
+                      className={`border-2 border-black h-20 w-20 text-center ${getCellColorById(cellId)}`}
+                      onClick={(e) => selectNextCell(e, selectedCells)}
+                      id={formatter.format(cellId)}>
+                      {getCheckerImageNode(cell)}
+                    </td>
+                  );
+                })}
+              </tr>
+            );
+          })}
+        </table>
+        <button
+          className="border-2 border-black bg-green-600 rounded-lg my-4 px-2 py-1 flex place-self-center w-fit"
+          onClick={async () => {
+            await ApiRouter.post("update", getStepGameModel(currentGame, selectedCells));
+            resetSelectedCells(selectedCells);
+          }}>
+          Send
+        </button>
+      </div>
     </div>
   );
 }

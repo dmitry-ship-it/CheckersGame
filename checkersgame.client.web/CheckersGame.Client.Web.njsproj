@@ -47,16 +47,26 @@
     <None Include="src\react-app-env.d.ts" />
     <None Include="src\reportWebVitals.ts" />
     <None Include="src\setupTests.ts" />
-    <None Include="src\app\GameField.tsx" />
     <None Include="src\app\pending-item.tsx" />
     <None Include="src\app\pending-list.tsx" />
-    <None Include="src\top\navbar.tsx" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="public" />
     <Folder Include="src" />
     <Folder Include="src\app" />
-    <Folder Include="src\top" />
+    <Folder Include="src\app\utils\" />
+    <Folder Include="src\footer\" />
+    <Folder Include="src\header\" />
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="src\app\game-field.tsx" />
+    <TypeScriptCompile Include="src\app\game-types-dropdown.tsx" />
+    <TypeScriptCompile Include="src\app\pending-item-description.tsx" />
+    <TypeScriptCompile Include="src\app\utils\field-utils.tsx" />
+    <TypeScriptCompile Include="src\app\utils\router.tsx" />
+    <TypeScriptCompile Include="src\app\utils\types.tsx" />
+    <TypeScriptCompile Include="src\footer\footer.tsx" />
+    <TypeScriptCompile Include="src\header\navbar.tsx" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <Import Project="$(VSToolsPath)\Node.js Tools\Microsoft.NodejsToolsV2.targets" />

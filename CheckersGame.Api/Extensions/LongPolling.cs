@@ -1,6 +1,4 @@
-﻿using CheckersGame.Api.Core;
-
-namespace CheckersGame.Api.Extensions
+﻿namespace CheckersGame.Api.Extensions
 {
     public static class LongPolling
     {

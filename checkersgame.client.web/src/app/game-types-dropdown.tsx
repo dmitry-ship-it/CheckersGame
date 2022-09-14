@@ -16,7 +16,7 @@ export default function GameTypesDropdown() {
 
   return (
     <select
-      className="mx-3 py-2 px-1 rounded-lg"
+      className="mx-3 py-2 px-1 rounded-xl text-black"
       onChange={(e) => {
         SelectedGameType = e.currentTarget.value;
       }}>

@@ -1,14 +1,14 @@
-let playerName: string = "";
+export let playerName: string = "";
 
-function Navbar() {
+export default function Navbar() {
   return (
-    <div className="sticky bg-gray-500 m-auto py-3">
+    <div className="sticky py-3 dark:bg-stone-600 bg-slate-400">
       <nav className="container w-screen mx-auto flex flex-wrap justify-between">
-        <a className="text-3xl font-bold" href="/">
+        <a className="text-3xl font-bold dark:text-white" href="/">
           Checkers game
         </a>
         <input
-          className="text-xl w-32 text-center rounded-xl"
+          className="text-xl max-w-sm p-full leading-none text-center rounded-xl select-none"
           type="text"
           name="playerName"
           placeholder="player name"
@@ -20,6 +20,3 @@ function Navbar() {
     </div>
   );
 }
-
-export default Navbar;
-export { playerName };

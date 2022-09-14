@@ -36,6 +36,8 @@ namespace CheckersGame.Api.Core
         public string GameType =>
             _game.GetType().Name.Replace("Game", string.Empty);
 
+        public static SortedDictionary<Guid, bool> PendingGames { get; } = new();
+
         public void NextTurn(Cell from, Cell to)
         {
             _game.NextTurn(from, to);

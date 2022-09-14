@@ -52,16 +52,19 @@ export default function PendingList() {
   }, [pendingGames]);
 
   return (
-    <div className="border-2 p-2 w-fit mx-auto">
-      <GameTypesDropdown />
+    <div className="border-2 rounded-xl p-2 max-w-xl mx-auto flex flex-col">
       {pendingGames.map((game) => {
         return <PendingItem gameId={game.gameId} gameType={game.gameType} firstPlayerName={game.firstPlayerName} />;
       })}
-      <div className="px-3">
+      {pendingGames.length > 0 ? <hr className="m-2" /> : null}
+      <div className="py-2 px-3 m-2 border rounded-xl hover:border-transparent hover:text-white hover:bg-gradient-to-r from-fuchsia-700 to-cyan-700 flex flex-row items-center">
         <span className="">Add new game: </span>
-        <button className="text-white bg-green-600 font-black w-10 h-10 rounded-lg" onClick={addGame}>
-          &#xFF0B;
-        </button>
+        <div className="ml-auto">
+          <GameTypesDropdown />
+          <button className="text-white bg-green-600 font-black w-10 h-10 rounded-xl" onClick={addGame}>
+            &#xFF0B;
+          </button>
+        </div>
       </div>
     </div>
   );

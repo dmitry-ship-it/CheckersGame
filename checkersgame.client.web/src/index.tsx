@@ -4,13 +4,15 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import Navbar from "./header/navbar";
+import Footer from "./footer/footer";
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 root.render(
   <React.StrictMode>
-    <Navbar />
-    <div className="container mx-auto mt-20 text-lg">
+    <div className="min-h-full h-full flex flex-col">
+      <Navbar />
       <App />
+      <Footer />
     </div>
   </React.StrictMode>
 );
