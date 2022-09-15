@@ -1,6 +1,4 @@
-﻿using CheckersGame.Api.Models;
-using CheckersGame.Common;
-using CheckersGame.Common.Abstractions;
+﻿using CheckersGame.Common.Abstractions;
 using CheckersGame.Common.Abstractions.Board;
 
 namespace CheckersGame.Api.Core
@@ -10,13 +8,14 @@ namespace CheckersGame.Api.Core
     {
         private readonly IGame _game;
 
+        private static readonly SortedDictionary<Guid, bool> _pendingGames = new();
+
         public GameContainer(IGame game, PlayerInfo firstPlayer, PlayerInfo secondPlayer)
         {
             _game = game;
-            FirstPlayer = firstPlayer;
-            SecondPlayer = secondPlayer;
+            Players = (firstPlayer, secondPlayer);
 
-            CurrentPlayerTurn = FirstPlayer;
+            CurrentPlayerTurn = Players.First;
 
             PushTurnToNextPlayer();
         }
@@ -25,8 +24,7 @@ namespace CheckersGame.Api.Core
 
         public PlayerInfo CurrentPlayerTurn { get; private set; }
 
-        public PlayerInfo FirstPlayer { get; set; }
-        public PlayerInfo SecondPlayer { get; set; }
+        public (PlayerInfo First, PlayerInfo Second) Players { get; set; }
 
         public IBoard Board => _game.Board;
 
@@ -36,8 +34,6 @@ namespace CheckersGame.Api.Core
         public string GameType =>
             _game.GetType().Name.Replace("Game", string.Empty);
 
-        public static SortedDictionary<Guid, bool> PendingGames { get; } = new();
-
         public void NextTurn(Cell from, Cell to)
         {
             _game.NextTurn(from, to);
@@ -46,29 +42,30 @@ namespace CheckersGame.Api.Core
 
         public PlayerInfo GetEnemyForPlayer(Guid enemyPlayerId)
         {
-            if (FirstPlayer.Id == enemyPlayerId)
+            if (Players.First.Id == enemyPlayerId)
             {
-                return SecondPlayer;
+                return Players.Second;
             }
-            else if (SecondPlayer.Id == enemyPlayerId)
+            else if (Players.Second.Id == enemyPlayerId)
             {
-                return FirstPlayer;
+                return Players.First;
             }
             else
             {
                 throw new ArgumentException("There is no player with this id.", nameof(enemyPlayerId));
             }
         }
+
         // TODO: Merge this two methods --^ --v
         public PlayerInfo GetPlayerById(Guid id)
         {
-            if (FirstPlayer.Id == id)
+            if (Players.First.Id == id)
             {
-                return FirstPlayer;
+                return Players.First;
             }
-            else if (SecondPlayer.Id == id)
+            else if (Players.Second.Id == id)
             {
-                return SecondPlayer;
+                return Players.Second;
             }
             else
             {
@@ -76,11 +73,48 @@ namespace CheckersGame.Api.Core
             }
         }
 
+        public static void SetGameStatus(Guid id, bool isPending)
+        {
+            lock (_pendingGames)
+            {
+                _pendingGames[id] = isPending;
+            }
+        }
+
+        public static bool RemoveGame(Guid id)
+        {
+            lock (_pendingGames)
+            {
+                return _pendingGames.Remove(id);
+            }
+        }
+
+        public static bool GetGameStatus(Guid id)
+        {
+            return _pendingGames[id];
+        }
+
+        public static int GetGamesCount()
+        {
+            return _pendingGames.Count;
+        }
+
+        public static IEnumerable<KeyValuePair<Guid, bool>> GetAllGamesStatus()
+        {
+            // create copy to avoid concurrency
+            return _pendingGames.ToArray();
+        }
+
+        public static bool IsGameExists(Guid id)
+        {
+            return _pendingGames.ContainsKey(id);
+        }
+
         private void PushTurnToNextPlayer()
         {
             CurrentPlayerTurn = _game.Players.First == _game.CurrentPlayerTurn
-                ? FirstPlayer
-                : SecondPlayer;
+                ? Players.First
+                : Players.Second;
         }
     }
 }

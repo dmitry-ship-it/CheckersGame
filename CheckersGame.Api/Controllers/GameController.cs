@@ -27,7 +27,7 @@ namespace CheckersGame.Api.Controllers
         [HttpGet("types")]
         public IActionResult GetGameTypes()
         {
-            _logger.LogInformation("Total games count: {Count}", GameContainer.PendingGames.Count);
+            _logger.LogInformation("Total games count: {Count}", GameContainer.GetGamesCount());
             return Ok(Enum.GetNames<GameType>());
         }
 
@@ -65,7 +65,7 @@ namespace CheckersGame.Api.Controllers
                 {
                     GameId = gameId,
                     GameType = gameContainer.GameType,
-                    FirstPlayerName = gameContainer.FirstPlayer.Name
+                    FirstPlayerName = gameContainer.Players.First.Name
                 };
             }));
         }
@@ -86,13 +86,13 @@ namespace CheckersGame.Api.Controllers
                 new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromMinutes(5)));
 
             // set this new game instance to pending state
-            GameContainer.PendingGames[container.GameId] = true;
+            GameContainer.SetGameStatus(container.GameId, true);
 
             // TODO: move object creation
             return Ok(new UpdateModel
             {
                 Id = container.GameId,
-                PlayerId = container.FirstPlayer.Id,
+                PlayerId = container.Players.First.Id,
                 Board = container.Board,
                 CurrentPlayerTurn = container.CurrentPlayerTurn.Id.ToString(),
                 IsEnded = container.IsEnded
@@ -102,24 +102,24 @@ namespace CheckersGame.Api.Controllers
         [HttpPost("join")]
         public IActionResult Join([FromBody] JoinModel joinModel)
         {
-            if (!GameContainer.PendingGames.ContainsKey(joinModel.GameId)
-                || !GameContainer.PendingGames[joinModel.GameId])
+            if (!GameContainer.IsGameExists(joinModel.GameId)
+                || !GameContainer.GetGameStatus(joinModel.GameId))
             {
                 return BadRequest();
             }
 
             // set game instance to not pending i.e. started
-            GameContainer.PendingGames[joinModel.GameId] = false;
+            GameContainer.SetGameStatus(joinModel.GameId, false);
 
             // get game instance and set second player
             var gameContainer = _cache.Get<GameContainer>(joinModel.GameId);
-            gameContainer.SecondPlayer.Name = joinModel.SecondPlayerName!;
+            gameContainer.Players.Second.Name = joinModel.SecondPlayerName!;
 
             // TODO: move game creation 
             return Ok(new UpdateModel
             {
                 Id = joinModel.GameId,
-                PlayerId = gameContainer.SecondPlayer.Id,
+                PlayerId = gameContainer.Players.Second.Id,
                 Board = gameContainer.Board,
                 CurrentPlayerTurn = gameContainer.CurrentPlayerTurn.Id.ToString(),
                 IsEnded = gameContainer.IsEnded
@@ -160,7 +160,7 @@ namespace CheckersGame.Api.Controllers
 
             if (gameContainer.IsEnded)
             {
-                GameContainer.PendingGames.Remove(gameContainer.GameId);
+                GameContainer.RemoveGame(gameContainer.GameId);
                 return Ok("Game ended!");
             }
 
@@ -209,7 +209,7 @@ namespace CheckersGame.Api.Controllers
         [NonAction]
         private IEnumerable<Guid> GetPendingGameIds()
         {
-            return GameContainer.PendingGames.Select(pair =>
+            return GameContainer.GetAllGamesStatus().Select(pair =>
                 pair.Value && _cache.TryGetValue<GameContainer>(pair.Key, out var _)
                     ? pair.Key
                     : Guid.Empty)
