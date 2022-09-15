@@ -1,4 +1,4 @@
-﻿using CheckersGame.Common.Abstractions;
+﻿using CheckersGame.Common;
 
 namespace CheckersGame.Api.Models
 {

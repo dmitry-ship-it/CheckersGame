@@ -7,7 +7,9 @@ let selectedCells: SelectedCells = { first: null, second: null };
 let isGameAutoUpdating = false;
 
 export default function GameField(game: Game) {
+  const [error, setError] = useState("");
   const [currentGame, setCurrentGame] = useState(game);
+
   useEffect(() => {
     if (!isGameAutoUpdating) {
       isGameAutoUpdating = true;
@@ -41,43 +43,65 @@ export default function GameField(game: Game) {
   }, [currentGame]);
 
   const field = toField(currentGame.board);
-  const formatter = new Intl.NumberFormat("en-US", { minimumIntegerDigits: 2 });
 
+  // TODO: break down into components
   return (
-    <div className="flex flex-row justify-center">
-      <div className="flex flex-col justify-around pr-10">
-        <div>{game.playerId}</div>
-        <div className="justify-center">Me</div>
+    <>
+      <div className="flex flex-row justify-center">
+        <div className="flex flex-col justify-around max-w-xl pr-10">
+          <div className="px-4 py-2 rounded-xl bg-slate-400">
+            <div className="">Username:</div>
+            <div className="inline-block overflow-hidden overflow-ellipsis w-32 font-bold">{game.secondPlayerName}</div>
+          </div>
+          <div className="px-4 py-2 rounded-xl bg-slate-400">
+            <div className="">Username:</div>
+            <div className="inline-block overflow-hidden overflow-ellipsis w-32 font-bold">{game.firstPlayerName}</div>
+          </div>
+        </div>
+        <div className="flex flex-col">
+          <table className="mx-auto">
+            {field.map((row, i) => {
+              return (
+                <tr>
+                  {row.map((cell, j) => {
+                    const cellId = i.toString() + j.toString();
+                    return (
+                      <td
+                        className={`border-2 border-black h-20 w-20 text-center ${getCellColorById(cellId)}`}
+                        onClick={(e) => selectNextCell(e, selectedCells)}
+                        id={cellId}>
+                        {getCheckerImageNode(cell)}
+                      </td>
+                    );
+                  })}
+                </tr>
+              );
+            })}
+          </table>
+        </div>
       </div>
-      <div className="flex flex-col">
-        <table className="mx-auto">
-          {field.map((row, i) => {
-            return (
-              <tr>
-                {row.map((cell, j) => {
-                  const cellId = i * field.length + j;
-                  return (
-                    <td
-                      className={`border-2 border-black h-20 w-20 text-center ${getCellColorById(cellId)}`}
-                      onClick={(e) => selectNextCell(e, selectedCells)}
-                      id={formatter.format(cellId)}>
-                      {getCheckerImageNode(cell)}
-                    </td>
-                  );
-                })}
-              </tr>
-            );
-          })}
-        </table>
-        <button
-          className="border-2 border-black bg-green-600 rounded-lg my-4 px-2 py-1 flex place-self-center w-fit"
-          onClick={async () => {
-            await ApiRouter.post("update", getStepGameModel(currentGame, selectedCells));
-            resetSelectedCells(selectedCells);
-          }}>
-          Send
-        </button>
+      <div className="flex flex-row justify-center">
+        <div className="flex flex-col justify-center">
+          <button
+            className="border-2 border-black bg-green-600 rounded-lg my-4 px-2 py-1 flex place-self-center w-fit"
+            onClick={async () => {
+              try {
+                await ApiRouter.post("update", getStepGameModel(currentGame, selectedCells));
+              } catch (e) {
+                setError((e as Error).message);
+                setTimeout(() => {
+                  setError("");
+                }, 5000);
+              }
+              resetSelectedCells(selectedCells);
+            }}>
+            Send
+          </button>
+          <div className="h-8 text-red-600 place-self-center">
+            {error.length !== 0 ? <div className="border-2 border-pink-700 p-3">Error: {error}</div> : null}
+          </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

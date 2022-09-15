@@ -1,10 +1,11 @@
-﻿using CheckersGame.Common.Abstractions;
-
-namespace CheckersGame.Common.Extensions
+﻿namespace CheckersGame.Common
 {
-    public static class CellExtensions
+    public struct Cell
     {
-        public static Cell ToCell(this IEnumerable<int> seq)
+        public int Row;
+        public int Col;
+
+        public static Cell ToCell(IEnumerable<int> seq)
         {
             if (seq.Count() != 2)
             {
@@ -14,7 +15,7 @@ namespace CheckersGame.Common.Extensions
             return new Cell { Col = seq.First(), Row = seq.Last() };
         }
 
-        public static Cell ToCell(this Tuple<int, int> tuple)
+        public static Cell ToCell(Tuple<int, int> tuple)
         {
             return new Cell { Col = tuple.Item1, Row = tuple.Item2 };
         }

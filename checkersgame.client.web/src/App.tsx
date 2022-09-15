@@ -21,7 +21,15 @@ export default function App() {
       {game === null ? (
         <PendingList />
       ) : (
-        <GameField board={game.board} currentPlayerTurn={game.currentPlayerTurn} id={game.id} isEnded={game.isEnded} playerId={game.playerId} />
+        <GameField
+          board={game.board}
+          firstPlayerName={game.firstPlayerName}
+          secondPlayerName={game.secondPlayerName}
+          currentPlayerTurn={game.currentPlayerTurn}
+          id={game.id}
+          isEnded={game.isEnded}
+          playerId={game.playerId}
+        />
       )}
     </div>
   );

@@ -15,6 +15,9 @@ export default class ApiRouter {
         "Content-type": "application/json; charset=UTF-8",
       },
     });
+
+    if (response.status === 400) throw new Error("You can't do this.");
+
     const data = await response.json();
     return data;
   }

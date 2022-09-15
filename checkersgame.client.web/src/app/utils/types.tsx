@@ -41,6 +41,8 @@ export interface NewGameRequestModel {
 export interface Game {
   id: string;
   playerId: string;
+  firstPlayerName: string;
+  secondPlayerName: string;
   board: (string | null)[];
   currentPlayerTurn: string;
   isEnded: boolean;

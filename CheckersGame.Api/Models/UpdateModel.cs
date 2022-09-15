@@ -6,6 +6,9 @@
 
         public Guid PlayerId { get; set; }
 
+        public string FirstPlayerName { get; set; } = default!;
+        public string SecondPlayerName { get; set; } = default!;
+
         public IEnumerable<string?> Board { get; set; } = null!;
 
         public string CurrentPlayerTurn { get; set; } = null!;

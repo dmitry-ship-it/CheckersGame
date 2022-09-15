@@ -31,8 +31,10 @@ export const getCheckerImageNode = (checkerName: string | null) => {
   return path !== null ? <img className="h-3/4 w-3/4 m-auto" src={path} alt={checkerName} /> : <div>{checkerName}</div>;
 };
 
-export const getCellColorById = (id: number): string => {
-  return (Math.floor(id / 10) + (id % 10)) % 2 === 1 ? CellDarkBgColor : CellLightBgColor;
+export const getCellColorById = (id: string): string => {
+  const row = Number.parseInt(id[0]);
+  const col = Number.parseInt(id[1]);
+  return (row + col) % 2 === 1 ? CellDarkBgColor : CellLightBgColor;
 };
 
 export const clearBgColor = (element: Element) => {
@@ -62,11 +64,11 @@ export const resetSelectedCells = (selectedCells: SelectedCells) => {
   if (selectedCells.first === null || selectedCells.second === null) return;
 
   clearBgColor(selectedCells.first);
-  selectedCells.first.classList.add(getCellColorById(Number.parseInt(selectedCells.first.id)));
+  selectedCells.first.classList.add(getCellColorById(selectedCells.first.id));
   selectedCells.first = null;
 
   clearBgColor(selectedCells.second);
-  selectedCells.second.classList.add(getCellColorById(Number.parseInt(selectedCells.second.id)));
+  selectedCells.second.classList.add(getCellColorById(selectedCells.second.id));
   selectedCells.second = null;
 };
 

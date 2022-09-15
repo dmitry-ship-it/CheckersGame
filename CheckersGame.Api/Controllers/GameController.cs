@@ -3,6 +3,7 @@ using CheckersGame.Api.Extensions;
 using CheckersGame.Api.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
+using System.ComponentModel;
 
 namespace CheckersGame.Api.Controllers
 {
@@ -93,6 +94,8 @@ namespace CheckersGame.Api.Controllers
             {
                 Id = container.GameId,
                 PlayerId = container.Players.First.Id,
+                FirstPlayerName = container.Players.First.Name,
+                SecondPlayerName = container.Players.Second.Name,
                 Board = container.Board,
                 CurrentPlayerTurn = container.CurrentPlayerTurn.Id.ToString(),
                 IsEnded = container.IsEnded
@@ -120,6 +123,8 @@ namespace CheckersGame.Api.Controllers
             {
                 Id = joinModel.GameId,
                 PlayerId = gameContainer.Players.Second.Id,
+                FirstPlayerName = gameContainer.Players.First.Name,
+                SecondPlayerName = gameContainer.Players.Second.Name,
                 Board = gameContainer.Board,
                 CurrentPlayerTurn = gameContainer.CurrentPlayerTurn.Id.ToString(),
                 IsEnded = gameContainer.IsEnded
@@ -200,6 +205,8 @@ namespace CheckersGame.Api.Controllers
             {
                 Id = clientGameState.GameId,
                 PlayerId = clientGameState.PlayerId,
+                FirstPlayerName = gameContainer.Players.First.Name,
+                SecondPlayerName = gameContainer.Players.Second.Name,
                 Board = gameContainer.Board,
                 CurrentPlayerTurn = gameContainer.CurrentPlayerTurn.Id.ToString(),
                 IsEnded = gameContainer.IsEnded

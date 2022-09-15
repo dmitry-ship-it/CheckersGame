@@ -1,16 +1,15 @@
-﻿using CheckersGame.Common.Abstractions;
-using CheckersGame.Common.Abstractions.Board;
+﻿using CheckersGame.Common;
+using CheckersGame.Common.Core;
 
 namespace CheckersGame.Api.Core
 {
-    // TODO: Rename with 'GameManager'. Also rename all variable names of this type.
     public class GameContainer
     {
-        private readonly IGame _game;
+        private readonly BaseGame _game;
 
         private static readonly SortedDictionary<Guid, bool> _pendingGames = new();
 
-        public GameContainer(IGame game, PlayerInfo firstPlayer, PlayerInfo secondPlayer)
+        public GameContainer(BaseGame game, PlayerInfo firstPlayer, PlayerInfo secondPlayer)
         {
             _game = game;
             Players = (firstPlayer, secondPlayer);
@@ -26,51 +25,16 @@ namespace CheckersGame.Api.Core
 
         public (PlayerInfo First, PlayerInfo Second) Players { get; set; }
 
-        public IBoard Board => _game.Board;
+        public BaseBoard Board => _game.Board;
 
-        public bool IsEnded => _game.EndMessage is null;
+        public bool IsEnded => _game.IsEnded;
 
-        // TODO: Replace implementation with GameType enum name
-        public string GameType =>
-            _game.GetType().Name.Replace("Game", string.Empty);
+        public string GameType => _game.GameType.ToString();
 
         public void NextTurn(Cell from, Cell to)
         {
             _game.NextTurn(from, to);
             PushTurnToNextPlayer();
-        }
-
-        public PlayerInfo GetEnemyForPlayer(Guid enemyPlayerId)
-        {
-            if (Players.First.Id == enemyPlayerId)
-            {
-                return Players.Second;
-            }
-            else if (Players.Second.Id == enemyPlayerId)
-            {
-                return Players.First;
-            }
-            else
-            {
-                throw new ArgumentException("There is no player with this id.", nameof(enemyPlayerId));
-            }
-        }
-
-        // TODO: Merge this two methods --^ --v
-        public PlayerInfo GetPlayerById(Guid id)
-        {
-            if (Players.First.Id == id)
-            {
-                return Players.First;
-            }
-            else if (Players.Second.Id == id)
-            {
-                return Players.Second;
-            }
-            else
-            {
-                throw new ArgumentException("There is no player with this id.", nameof(id));
-            }
         }
 
         public static void SetGameStatus(Guid id, bool isPending)
