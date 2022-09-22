@@ -1,8 +1,6 @@
 using CheckersGame.Common;
 using CheckersGame.Api.Core;
 using Serilog;
-using CheckersGame.Api.Controllers;
-using Microsoft.AspNetCore.Builder;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,7 +10,6 @@ builder.Logging.AddSerilog(new LoggerConfiguration()
     .CreateLogger());
 
 builder.Services.AddControllers();
-
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>

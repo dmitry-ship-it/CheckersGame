@@ -53,7 +53,7 @@ namespace CheckersGame.Api.Core
             }
         }
 
-        public static bool GetGameStatus(Guid id)
+        public static bool IsGamePending(Guid id)
         {
             return _pendingGames[id];
         }

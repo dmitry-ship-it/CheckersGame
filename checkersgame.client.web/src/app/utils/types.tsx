@@ -31,6 +31,8 @@ export interface PendingGame {
   gameId: string;
   gameType: string;
   firstPlayerName: string;
+  secondPlayerName: string;
+  isPending: boolean;
 }
 
 export interface NewGameRequestModel {

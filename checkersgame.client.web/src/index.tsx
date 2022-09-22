@@ -9,7 +9,7 @@ import Footer from "./footer/footer";
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 root.render(
   <React.StrictMode>
-    <div className="min-h-full h-full flex flex-col">
+    <div className="min-h-screen flex flex-col">
       <Navbar />
       <App />
       <Footer />

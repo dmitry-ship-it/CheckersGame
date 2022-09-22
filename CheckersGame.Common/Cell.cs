@@ -2,8 +2,8 @@
 {
     public struct Cell
     {
-        public int Row;
-        public int Col;
+        public int Row { get; set; }
+        public int Col { get; set; }
 
         public static Cell ToCell(IEnumerable<int> seq)
         {

@@ -21,7 +21,11 @@ export default function GameTypesDropdown() {
         SelectedGameType = e.currentTarget.value;
       }}>
       {gameTypes.map((gameType) => {
-        return <option value={gameType}>{gameType}</option>;
+        return (
+          <option value={gameType} key={gameType}>
+            {gameType}
+          </option>
+        );
       })}
     </select>
   );

@@ -1,4 +1,6 @@
-﻿namespace CheckersGame.Api.Models
+﻿using CheckersGame.Api.Core;
+
+namespace CheckersGame.Api.Models
 {
     public class UpdateModel
     {
@@ -9,9 +11,9 @@
         public string FirstPlayerName { get; set; } = default!;
         public string SecondPlayerName { get; set; } = default!;
 
-        public IEnumerable<string?> Board { get; set; } = null!;
+        public IEnumerable<string?> Board { get; set; } = default!;
 
-        public string CurrentPlayerTurn { get; set; } = null!;
+        public string CurrentPlayerTurn { get; set; } = default!;
 
         public bool IsEnded { get; set; }
     }
