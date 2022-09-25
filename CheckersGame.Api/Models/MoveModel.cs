@@ -2,10 +2,8 @@
 
 namespace CheckersGame.Api.Models
 {
-    public class MoveModel
+    public class MoveModel : BaseModel
     {
-        public Guid GameId { get; set; }
-
         public Guid PlayerId { get; set; }
 
         public Cell From { get; set; }

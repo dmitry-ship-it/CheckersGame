@@ -1,4 +1,5 @@
-﻿using CheckersGame.Common;
+﻿using CheckersGame.Api.Models;
+using CheckersGame.Common;
 using CheckersGame.Common.Core;
 
 namespace CheckersGame.Api.Core
@@ -7,6 +8,7 @@ namespace CheckersGame.Api.Core
     {
         private readonly BaseGame _game;
 
+        // this field is accessed via methods to make it thread-safe
         private static readonly SortedDictionary<Guid, bool> _pendingGames = new();
 
         public GameContainer(BaseGame game, PlayerInfo firstPlayer, PlayerInfo secondPlayer)
@@ -35,6 +37,32 @@ namespace CheckersGame.Api.Core
         {
             _game.NextTurn(from, to);
             PushTurnToNextPlayer();
+        }
+
+        public GameModel CreateGameModel(
+            Guid playerId,
+            Guid? gameId = null,
+            string? firstPlayerId = null,
+            string? secondPlayerId = null,
+            IEnumerable<string?>? board = null,
+            string? currentPlayerTurn = null,
+            bool? isEnded = null)
+        {
+            return new GameModel
+            {
+                Id = gameId ?? GameId,
+                PlayerId = playerId,
+                FirstPlayerName = firstPlayerId ?? Players.First.Name,
+                SecondPlayerName = secondPlayerId ?? Players.Second.Name,
+                Board = board ?? Board,
+                CurrentPlayerTurn = currentPlayerTurn ?? CurrentPlayerTurn.Id.ToString(),
+                IsEnded = isEnded ?? IsEnded
+            };
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Players.First.Name, Players.Second.Name, Board);
         }
 
         public static void SetGameStatus(Guid id, bool isPending)

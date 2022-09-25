@@ -2,8 +2,8 @@
 {
     public enum GameType
     {
-        International,
         Default,
+        International,
         // Canadian,
         // Italian,
         Custom

@@ -1,9 +1,7 @@
 ﻿namespace CheckersGame.Api.Models
 {
-    public class PendingGameModel
+    public class GameInfoModel : BaseModel
     {
-        public Guid GameId { get; set; }
-
         public string GameType { get; set; } = default!;
 
         public string? FirstPlayerName { get; set; }

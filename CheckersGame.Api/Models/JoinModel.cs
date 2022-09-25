@@ -1,9 +1,7 @@
 ﻿namespace CheckersGame.Api.Models
 {
-    public class JoinModel
+    public class JoinModel : BaseModel
     {
-        public Guid GameId { get; set; }
-
         public string? SecondPlayerName { get; set; }
     }
 }

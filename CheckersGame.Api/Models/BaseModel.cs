@@ -1,8 +1,7 @@
 ﻿namespace CheckersGame.Api.Models
 {
-    public class UpdateGameModel
+    public class BaseModel
     {
         public Guid GameId { get; set; }
-        public Guid PlayerId { get; set; }
     }
 }

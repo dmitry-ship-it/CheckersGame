@@ -1,6 +1,6 @@
 ﻿namespace CheckersGame.Api.Models
 {
-    public class NewGameModel
+    public class NewGameRequestModel
     {
         public string GameType { get; set; } = null!;
 

@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
-import { getCellColorById, getCheckerImageNode, selectNextCell, toField } from "./utils/field-utils";
+import { toField } from "./utils/field-utils";
 import { Game, SelectedCells } from "./utils/types";
 import ApiRouter from "./utils/router";
 import GameInfoColumn from "./game-info-column";
 import GameControls from "./game-controls";
+import GameEndedCard from "./game-ended-card";
+import GameFieldCell from "./game-field-cell";
 
 let selectedCells: SelectedCells = { first: null, second: null };
 let isGameAutoUpdating = false;
@@ -31,15 +33,7 @@ export default function GameField(ctx: { game: Game }) {
               return (
                 <tr>
                   {row.map((cell, j) => {
-                    const cellId = i.toString() + j.toString();
-                    return (
-                      <td
-                        className={`border-2 border-black h-20 w-20 text-center ${getCellColorById(cellId)}`}
-                        onClick={(e) => selectNextCell(e, selectedCells)}
-                        id={cellId}>
-                        {getCheckerImageNode(cell)}
-                      </td>
-                    );
+                    return <GameFieldCell row={i} col={j} selectedCells={selectedCells} cellDescription={cell} />;
                   })}
                 </tr>
               );
@@ -48,6 +42,7 @@ export default function GameField(ctx: { game: Game }) {
         </div>
       </div>
       <GameControls game={currentGame} selectedCells={selectedCells} />
+      {currentGame.isEnded && <GameEndedCard />}
     </>
   );
 }
