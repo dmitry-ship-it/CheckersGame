@@ -18,12 +18,11 @@ export default class ApiRouter {
 
   public static createLongPollingPost<T>(path: string, body: T, setterCallback: any) {
     const postRequest = async (content: T) => {
-      console.log("Fetching games... Now games is " + JSON.stringify(content));
       console.log("sending body: " + JSON.stringify(content));
       const response = await this.fetchPost(path, content);
 
       if (response.status !== 200) {
-        console.warn("Fetch pending games list error");
+        console.warn("Fetch error");
         await postRequest(content);
       } else {
         const data = await response.json();

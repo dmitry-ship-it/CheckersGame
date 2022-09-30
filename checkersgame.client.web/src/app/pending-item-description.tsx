@@ -7,11 +7,13 @@ export default function PendingItemDescription(ctx: { game: PendingGame }) {
       <div>
         {ctx.game.isPending ? (
           <div>
-            <span className="text-white font-semibold">{ctx.game.firstPlayerName}</span> is waiting for opponent
+            <span className="text-white font-semibold">{ctx.game.firstPlayerName}</span>
+            <span> is waiting for opponent</span>
           </div>
         ) : (
           <div>
-            <span className="text-white font-semibold">{ctx.game.secondPlayerName}</span> is fighting with{" "}
+            <span className="text-white font-semibold">{ctx.game.secondPlayerName}</span>
+            <span> is fighting with </span>
             <span className="text-white font-semibold">{ctx.game.firstPlayerName}</span>
           </div>
         )}

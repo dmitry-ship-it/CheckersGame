@@ -8,9 +8,6 @@ namespace CheckersGame.Api.Core
     {
         private readonly BaseGame _game;
 
-        // this field is accessed via methods to make it thread-safe
-        private static readonly SortedDictionary<Guid, bool> _pendingGames = new();
-
         public GameContainer(BaseGame game, PlayerInfo firstPlayer, PlayerInfo secondPlayer)
         {
             _game = game;
@@ -20,6 +17,8 @@ namespace CheckersGame.Api.Core
 
             PushTurnToNextPlayer();
         }
+
+        //public static GameKeysVault Games { get; } = new();
 
         public Guid GameId { get; } = Guid.NewGuid();
 
@@ -39,11 +38,11 @@ namespace CheckersGame.Api.Core
             PushTurnToNextPlayer();
         }
 
-        public GameModel CreateGameModel(
+        public GameModel CreateViewModel(
             Guid playerId,
             Guid? gameId = null,
-            string? firstPlayerId = null,
-            string? secondPlayerId = null,
+            string? firstPlayerName = null,
+            string? secondPlayerName = null,
             IEnumerable<string?>? board = null,
             string? currentPlayerTurn = null,
             bool? isEnded = null)
@@ -52,8 +51,8 @@ namespace CheckersGame.Api.Core
             {
                 Id = gameId ?? GameId,
                 PlayerId = playerId,
-                FirstPlayerName = firstPlayerId ?? Players.First.Name,
-                SecondPlayerName = secondPlayerId ?? Players.Second.Name,
+                FirstPlayerName = firstPlayerName ?? Players.First.Name,
+                SecondPlayerName = secondPlayerName ?? Players.Second.Name,
                 Board = board ?? Board,
                 CurrentPlayerTurn = currentPlayerTurn ?? CurrentPlayerTurn.Id.ToString(),
                 IsEnded = isEnded ?? IsEnded
@@ -63,43 +62,6 @@ namespace CheckersGame.Api.Core
         public override int GetHashCode()
         {
             return HashCode.Combine(Players.First.Name, Players.Second.Name, Board);
-        }
-
-        public static void SetGameStatus(Guid id, bool isPending)
-        {
-            lock (_pendingGames)
-            {
-                _pendingGames[id] = isPending;
-            }
-        }
-
-        public static bool RemoveGame(Guid id)
-        {
-            lock (_pendingGames)
-            {
-                return _pendingGames.Remove(id);
-            }
-        }
-
-        public static bool IsGamePending(Guid id)
-        {
-            return _pendingGames[id];
-        }
-
-        public static int GetGamesCount()
-        {
-            return _pendingGames.Count;
-        }
-
-        public static IEnumerable<KeyValuePair<Guid, bool>> GetAllGamesStatus()
-        {
-            // create copy to avoid concurrency
-            return _pendingGames.ToArray();
-        }
-
-        public static bool IsGameExists(Guid id)
-        {
-            return _pendingGames.ContainsKey(id);
         }
 
         private void PushTurnToNextPlayer()

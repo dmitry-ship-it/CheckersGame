@@ -2,8 +2,8 @@
 {
     public class NewGameRequestModel
     {
-        public string GameType { get; set; } = null!;
+        public string GameType { get; set; } = default!;
 
-        public string? PlayerName { get; set; }
+        public string PlayerName { get; set; } = default!;
     }
 }

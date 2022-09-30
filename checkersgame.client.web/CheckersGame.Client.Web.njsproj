@@ -59,8 +59,15 @@
     <Folder Include="src\header\" />
   </ItemGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="src\app\error-card.tsx" />
+    <TypeScriptCompile Include="src\app\game-add-controls.tsx" />
+    <TypeScriptCompile Include="src\app\game-controls.tsx" />
+    <TypeScriptCompile Include="src\app\game-ended-card.tsx" />
+    <TypeScriptCompile Include="src\app\game-field-cell.tsx" />
     <TypeScriptCompile Include="src\app\game-field.tsx" />
+    <TypeScriptCompile Include="src\app\game-info-column.tsx" />
     <TypeScriptCompile Include="src\app\game-types-dropdown.tsx" />
+    <TypeScriptCompile Include="src\app\game-user-card.tsx" />
     <TypeScriptCompile Include="src\app\pending-item-description.tsx" />
     <TypeScriptCompile Include="src\app\utils\field-utils.tsx" />
     <TypeScriptCompile Include="src\app\utils\router.tsx" />

@@ -21,7 +21,7 @@ export default function PendingList() {
       {pendingGames.map((game) => {
         return <PendingItem game={game} />;
       })}
-      {pendingGames.length > 0 ? <hr className="m-2" /> : null}
+      {pendingGames.length > 0 && <hr className="m-2" />}
       <AddNewGame />
     </div>
   );

@@ -2,7 +2,6 @@ using CheckersGame.Api.Core;
 using CheckersGame.Api.Extensions;
 using CheckersGame.Api.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Memory;
 
 namespace CheckersGame.Api.Controllers
 {
@@ -10,32 +9,28 @@ namespace CheckersGame.Api.Controllers
     [Route("api/[controller]")]
     public class GameController : ControllerBase
     {
-        private readonly IMemoryCache _cache;
-        private readonly GameContainerFactory _gameFactory;
+        private readonly GamesVault _games;
         private readonly ILogger<GameController> _logger;
 
-        public GameController(
-            IMemoryCache memoryCache,
-            GameContainerFactory gameFactory,
-            ILogger<GameController> logger)
+        public GameController(GamesVault games, ILogger<GameController> logger)
         {
-            _cache = memoryCache;
-            _gameFactory = gameFactory;
+            _games = games;
             _logger = logger;
         }
 
         [HttpGet("types")]
         public IActionResult GetGameTypes()
         {
-            _logger.LogInformation("Total games count: {Count}", GameContainer.GetGamesCount());
+            _logger.LogInformation("Total games count: {Count}", _games.Vault.Count);
             return Ok(Enum.GetNames<GameType>());
         }
 
         [HttpPost("list")]
-        public async Task<IActionResult> GetPendingGames(
+        public async Task<IActionResult> GetGamesList(
             [FromBody] IEnumerable<GameInfoModel> clientPendingGamesState,
             CancellationToken cancellationToken = default)
         {
+            // TODO: replace log text
             _logger.LogInformation("Update pending list state.");
 
             // put thread into long polling loop
@@ -45,7 +40,7 @@ namespace CheckersGame.Api.Controllers
                 await LongPolling.WaitWhileAsync(
                     condition: () => clientPendingGamesState
                         .Select(g => KeyValuePair.Create(g.GameId, g.IsPending))
-                        .SequenceEqual(GameContainer.GetAllGamesStatus()),
+                        .SequenceEqual(_games.Vault.GetAllGamesStatus()),
                     frequency: 2_000,
                     timeout: 60_000,
                     cancellationToken: cancellationToken);
@@ -55,21 +50,28 @@ namespace CheckersGame.Api.Controllers
                 return NoContent();
             }
 
-            return Ok(GameContainer.GetAllGamesStatus().Select(pair =>
+            // TODO: optimize linq query
+            return Ok(_games.Vault.GetAllGamesStatus().Select(pair =>
             {
-                var gameContainer = _cache.Get<GameContainer>(pair.Key);
+                var game = _games.Get(pair.Key);
+
+                if (game is null)
+                {
+                    _games.Vault.RemoveIfExist(pair.Key);
+                    return null;
+                }
 
                 // TODO: Add IsRejoinable param to this model
                 // also add it to frontend
                 return new GameInfoModel
                 {
                     GameId = pair.Key,
-                    GameType = gameContainer.GameType,
-                    FirstPlayerName = gameContainer.Players.First.Name,
-                    SecondPlayerName = gameContainer.Players.Second.Name,
-                    IsPending = GameContainer.IsGamePending(pair.Key),
+                    GameType = game.GameType,
+                    FirstPlayerName = game.Players.First.Name,
+                    SecondPlayerName = game.Players.Second.Name,
+                    IsPending = _games.Vault.IsGamePending(pair.Key),
                 };
-            }));
+            }).Where(item => item is not null));
         }
 
         [HttpPost("new")]
@@ -80,39 +82,34 @@ namespace CheckersGame.Api.Controllers
                 return BadRequest();
             }
 
-            var container = _gameFactory.Create(gameType, newGameModel.PlayerName);
-
-            var cacheOptions = new MemoryCacheEntryOptions();
-            cacheOptions.SetSlidingExpiration(TimeSpan.FromMinutes(5)); // remove game from dictionary on expiration
-            cacheOptions.RegisterPostEvictionCallback((key, _, _, _) => GameContainer.RemoveGame((Guid)key));
-            _cache.Set(container.GameId, container, cacheOptions);
+            var game = _games.Create(gameType, newGameModel.PlayerName);
 
             // set this new game instance to pending state
-            GameContainer.SetGameStatus(container.GameId, true);
+            _games.Vault.SetGameStatus(game.GameId, true);
 
-            return Ok(container.CreateGameModel(container.Players.First.Id));
+            return Ok(game.CreateViewModel(game.Players.First.Id));
         }
 
         [HttpPost("join")]
         public IActionResult Join([FromBody] JoinModel joinModel)
         {
-            if (!GameContainer.IsGameExists(joinModel.GameId)
-                || !GameContainer.IsGamePending(joinModel.GameId))
+            var game = _games.Get(joinModel.GameId);
+
+            if (game is null || !_games.Vault.IsGamePending(joinModel.GameId))
             {
                 return BadRequest();
             }
 
+            // validation passed, so
             // set game instance to not pending i.e. started
-            GameContainer.SetGameStatus(joinModel.GameId, false);
+            _games.Vault.SetGameStatus(joinModel.GameId, false);
 
-            // get game instance and set second player
-            var container = _cache.Get<GameContainer>(joinModel.GameId);
-            if (!string.IsNullOrEmpty(joinModel.SecondPlayerName))
-            {
-                container.Players.Second.Name = joinModel.SecondPlayerName;
-            }
+            // set second player name
+            game.Players.Second.Name = !string.IsNullOrEmpty(joinModel.SecondPlayerName)
+                ? joinModel.SecondPlayerName
+                : "Noname_second";
 
-            return Ok(container.CreateGameModel(container.Players.Second.Id, joinModel.GameId));
+            return Ok(game.CreateViewModel(game.Players.Second.Id, joinModel.GameId));
         }
 
         [HttpPost("rejoin")]
@@ -128,38 +125,44 @@ namespace CheckersGame.Api.Controllers
         [HttpPost("update")]
         public IActionResult UpdateGameState([FromBody] MoveModel moveModel)
         {
-            var gameContainer = _cache.Get<GameContainer>(moveModel.GameId);
+            var game = _games.Get(moveModel.GameId);
 
-            if (gameContainer is null)
+            if (game is null)
             {
-                if (GameContainer.IsGameExists(moveModel.GameId))
+                if (_games.Vault.RemoveIfExist(moveModel.GameId))
                 {
-                    GameContainer.RemoveGame(moveModel.GameId);
+                    _logger.LogError("WTF is this?? Game was not deleted from key storage.");
                 }
 
                 return BadRequest();
             }
 
-            if (gameContainer.IsEnded)
+            if (_games.Vault.IsGamePending(game.GameId))
             {
-                GameContainer.RemoveGame(gameContainer.GameId);
+                return BadRequest();
+            }
+
+            if (game.IsEnded)
+            {
+                _games.Vault.RemoveIfExist(game.GameId);
                 return Ok("Game ended!");
             }
 
-            if (gameContainer.CurrentPlayerTurn.Id != moveModel.PlayerId)
+            if (game.CurrentPlayerTurn.Id != moveModel.PlayerId)
             {
                 return BadRequest();
             }
 
             try
             {
-                gameContainer.NextTurn(moveModel.From, moveModel.To);
+                game.NextTurn(moveModel.From, moveModel.To);
             }
             catch (Exception ex) when (ex is ArgumentException or InvalidOperationException)
             {
                 return BadRequest(ex.Message);
             }
 
+            // TODO: fix this log (throws NullReferenceException)
             //_logger.LogInformation("Checker moved by '{PlayerColor}' player in game (id = {GameId}).",
             //   gameContainer.Board[moveModel.From]!.Color.Name, moveModel.GameId);
 
@@ -171,13 +174,13 @@ namespace CheckersGame.Api.Controllers
             GameModel clientGameState,
             CancellationToken cancellationToken = default)
         {
-            var container = _cache.Get<GameContainer>(clientGameState.Id);
+            var game = _games.Get(clientGameState.Id);
 
-            if (container is null)
+            if (game is null)
             {
-                if (GameContainer.IsGameExists(clientGameState.Id))
+                if (_games.Vault.RemoveIfExist(clientGameState.Id))
                 {
-                    GameContainer.RemoveGame(clientGameState.Id);
+                    _logger.LogError("WTF is this?? Game was not deleted from key storage.");
                 }
 
                 return BadRequest();
@@ -188,7 +191,7 @@ namespace CheckersGame.Api.Controllers
                 // put into long polling loop and wait while game board is not updated
                 // to update game board other player should move his checker
                 await LongPolling.WaitWhileAsync(
-                    condition: () => clientGameState == container,
+                    condition: () => clientGameState == game,
                     timeout: 60_000, // 1 min
                     cancellationToken: cancellationToken);
             }
@@ -200,7 +203,7 @@ namespace CheckersGame.Api.Controllers
             _logger.LogInformation("Get updated game (id = {GameId}).",
                 clientGameState.Id);
 
-            return Ok(container.CreateGameModel(
+            return Ok(game.CreateViewModel(
                 clientGameState.PlayerId,
                 clientGameState.Id));
         }

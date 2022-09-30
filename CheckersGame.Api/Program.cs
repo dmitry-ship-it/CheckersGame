@@ -26,6 +26,7 @@ builder.Services.AddMemoryCache();
 
 builder.Services.AddSingleton<GameFactory>();
 builder.Services.AddSingleton<GameContainerFactory>();
+builder.Services.AddSingleton<GamesVault>();
 
 var app = builder.Build();
 

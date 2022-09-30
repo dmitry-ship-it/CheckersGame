@@ -13,17 +13,14 @@ namespace CheckersGame.Api.Core
 
         public GameContainer Create(
             GameType gameType,
-            string? firstPlayerName = null,
-            string? secondPlayerName = null)
+
+            // default players names 
+            string firstPlayerName = "",
+            string secondPlayerName = "")
         {
             if (string.IsNullOrEmpty(firstPlayerName))
             {
-                firstPlayerName = "Noname";
-            }
-
-            if (string.IsNullOrEmpty(secondPlayerName))
-            {
-                secondPlayerName = "Noname";
+                firstPlayerName = "Noname_first";
             }
 
             var first = new PlayerInfo(firstPlayerName);
