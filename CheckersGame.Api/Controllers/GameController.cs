@@ -155,9 +155,9 @@ namespace CheckersGame.Api.Controllers
 
             try
             {
-                game.NextTurn(moveModel.From, moveModel.To);
+                game.NextTurn(moveModel.Cells);
             }
-            catch (Exception ex) when (ex is ArgumentException or InvalidOperationException)
+            catch (ArgumentException ex)
             {
                 return BadRequest(ex.Message);
             }

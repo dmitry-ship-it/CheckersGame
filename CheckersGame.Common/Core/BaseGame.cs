@@ -30,26 +30,29 @@ namespace CheckersGame.Common.Core
 
         public bool IsEnded { get; private set; }
 
-        public void NextTurn(Cell from, Cell to)
+        public void NextTurn(Cell[] cells)
         {
-            if (Board[from]?.Color != CurrentPlayerTurn.Color)
+            if (cells.Length == 0)
+            {
+                throw new ArgumentException("Target cell not selected.", nameof(cells));
+            }
+
+            var targetCell = cells[0];
+            if (Board[targetCell]?.Color != CurrentPlayerTurn.Color)
             {
                 throw new ArgumentException("This player can't touch this checker.");
             }
 
-            Board.HandleMove(from, to, out var isCheckerBeaten);
+            var checkersBeaten = Board.HandleMove(cells);
 
             var enemy = Players.First.Color == CurrentPlayerTurn.Color
                 ? Players.Second
                 : Players.First;
 
-            if (isCheckerBeaten)
-            {
-                enemy.CheckersCount--;
-                // add score??
+            enemy.CheckersCount -= checkersBeaten;
+            // add score??
 
-                IsEnded = enemy.CheckersCount == 0;
-            }
+            IsEnded = enemy.CheckersCount == 0;
 
             CurrentPlayerTurn = enemy;
         }

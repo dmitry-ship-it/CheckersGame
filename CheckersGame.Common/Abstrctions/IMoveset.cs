@@ -4,6 +4,6 @@ namespace CheckersGame.Common.Abstrctions
 {
     public interface IMoveset
     {
-        (Cell? EnemyCell, bool IsLegalMove) GetInfo(Cell from, Cell to, BaseBoard board);
+        Cell[] GetValidatedEnemyCells(Cell[] cells, BaseBoard board);
     }
 }

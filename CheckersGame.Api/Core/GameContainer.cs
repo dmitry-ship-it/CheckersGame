@@ -32,9 +32,9 @@ namespace CheckersGame.Api.Core
 
         public string GameType => _game.GameType.ToString();
 
-        public void NextTurn(Cell from, Cell to)
+        public void NextTurn(Cell[] cells)
         {
-            _game.NextTurn(from, to);
+            _game.NextTurn(cells);
             PushTurnToNextPlayer();
         }
 

@@ -7,6 +7,7 @@ import GameControls from "./game-controls";
 import GameEndedCard from "./game-ended-card";
 import GameFieldCell from "./game-field-cell";
 
+// TODO: refactor cells selecting logic to select more than two cells
 let selectedCells: SelectedCells = { first: null, second: null };
 let isGameAutoUpdating = false;
 
@@ -18,6 +19,8 @@ export default function GameField(ctx: { game: Game }) {
       isGameAutoUpdating = true;
       ApiRouter.createLongPollingPost<Game>("updated", currentGame, setCurrentGame);
     }
+    // TODO: remove currentGame from array??
+    // if this array is empty then useEffect executes once
   }, [currentGame]);
 
   const field = toField(currentGame.board);

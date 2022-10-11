@@ -4,7 +4,8 @@ using CheckersGame.Common.Impl.International;
 var game = new InternationalGame();
 PrintBoard();
 
-// TODO: REFACTOR ALL THIS SHIT
+// FIXME:
+// TODO: REFACTOR THIS
 while (true)
 {
     Console.WriteLine($"Now its {game.CurrentPlayerTurn.Color.Name}'s turn:");

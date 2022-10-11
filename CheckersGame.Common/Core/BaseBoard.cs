@@ -71,29 +71,28 @@ namespace CheckersGame.Common.Core
             }
         }
 
-        public void HandleMove(Cell from, Cell to, out bool isCheckerBeaten)
+        public int HandleMove(Cell[] cells)
         {
-            if (this[from] == BaseChecker.Empty)
+            if (cells.Length < 2)
             {
-                throw new ArgumentException("This cell is empty", nameof(from));
+                throw new ArgumentException("Тot enough checkers selected.", nameof(cells));
             }
 
-            var (enemyCell, isLegalMove) = this[from]!.Moveset.GetInfo(from, to, this);
+            var startCell = cells[0];
+            var endCell = cells[^1];
 
-            if (!isLegalMove)
+            var enemyCells = this[startCell]!.Moveset.GetValidatedEnemyCells(cells, this);
+
+            // set beaten checkers as empty cell
+            for (var i = 0; i < enemyCells.Length; i++)
             {
-                throw new InvalidOperationException("This move is illegal");
+                this[enemyCells[i]] = BaseChecker.Empty;
             }
 
-            if (enemyCell is not null)
-            {
-                this[enemyCell.Value] = BaseChecker.Empty;
-            }
+            TryUpgradeChecker(startCell, endCell);
+            SwapCheckers(startCell, endCell);
 
-            isCheckerBeaten = enemyCell.HasValue;
-
-            TryUpgradeChecker(from, to);
-            SwapCheckers(from, to);
+            return enemyCells.Length;
         }
 
         private void TryUpgradeChecker(Cell from, Cell to)
