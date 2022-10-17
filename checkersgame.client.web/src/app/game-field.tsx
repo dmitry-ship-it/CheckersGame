@@ -8,7 +8,7 @@ import GameEndedCard from "./game-ended-card";
 import GameFieldCell from "./game-field-cell";
 
 // TODO: refactor cells selecting logic to select more than two cells
-let selectedCells: SelectedCells = { first: null, second: null };
+let selectedCells: SelectedCells = { cells: [] };
 let isGameAutoUpdating = false;
 
 export default function GameField(ctx: { game: Game }) {

@@ -2,7 +2,7 @@ import { PendingGame } from "./utils/types";
 
 export default function PendingItemDescription(ctx: { game: PendingGame }) {
   return (
-    <div className="mr-20">
+    <div className="mr-12">
       <div>Game type: {ctx.game.gameType}</div>
       <div>
         {ctx.game.isPending ? (

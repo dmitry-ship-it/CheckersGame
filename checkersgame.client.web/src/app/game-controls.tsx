@@ -10,21 +10,28 @@ export default function GameControls(ctx: { game: Game; selectedCells: SelectedC
   return (
     <div className="flex flex-row justify-center">
       <div className="flex flex-col justify-center">
-        <button
-          className="border-2 border-black bg-green-600 rounded-lg my-4 px-2 py-1 flex place-self-center w-fit"
-          onClick={async () => {
-            try {
-              await ApiRouter.post("update", getStepGameModel(ctx.game, ctx.selectedCells));
-            } catch (e) {
-              setError((e as Error).message);
-              setTimeout(() => {
-                setError("");
-              }, 5000);
-            }
-            resetSelectedCells(ctx.selectedCells);
-          }}>
-          Send
-        </button>
+        <div className="flex flex-row justify-center space-x-4">
+          <button
+            className="border-2 border-black bg-green-600 rounded-lg my-4 px-2 py-1 flex place-self-center w-fit"
+            onClick={async () => {
+              try {
+                await ApiRouter.post("update", getStepGameModel(ctx.game, ctx.selectedCells));
+              } catch (e) {
+                setError((e as Error).message);
+                setTimeout(() => {
+                  setError("");
+                }, 5000);
+              }
+              resetSelectedCells(ctx.selectedCells);
+            }}>
+            Send
+          </button>
+          <button
+            className="border-2 border-black bg-blue-600 rounded-lg my-4 px-2 py-1 flex place-self-center w-fit"
+            onClick={() => resetSelectedCells(ctx.selectedCells)}>
+            Reset selection
+          </button>
+        </div>
         <ErrorCard message={error} />
       </div>
     </div>
