@@ -1,4 +1,4 @@
-import { Game, SelectedCells, StepGameModel } from "./types";
+import { Cell, Game, SelectedCells, StepGameModel } from "./types";
 
 export const CellDarkBgColor = "bg-neutral-500";
 export const CellLightBgColor = "bg-white";
@@ -61,46 +61,37 @@ export const toField = (board: (string | null)[]) => {
 };
 
 export const resetSelectedCells = (selectedCells: SelectedCells) => {
-  if (selectedCells.first === null || selectedCells.second === null) return;
+  if (selectedCells.cells.length === 0) return;
 
-  clearBgColor(selectedCells.first);
-  selectedCells.first.classList.add(getCellColorById(selectedCells.first.id));
-  selectedCells.first = null;
+  for (const cell of selectedCells.cells) {
+    clearBgColor(cell);
+    cell.classList.add(getCellColorById(cell.id));
+  }
 
-  clearBgColor(selectedCells.second);
-  selectedCells.second.classList.add(getCellColorById(selectedCells.second.id));
-  selectedCells.second = null;
+  selectedCells.cells = [];
 };
 
 export const getStepGameModel = (game: Game, selectedCells: SelectedCells): StepGameModel => {
-  if (selectedCells.first === null || selectedCells.second === null) {
-    throw Error("Cells are not selected.");
+  if (selectedCells.cells.length < 2) {
+    throw Error("You have to select at least two cells.");
   }
   return {
     gameId: game.id,
     playerId: game.playerId,
-    from: {
-      row: Number.parseInt(selectedCells.first.id[0]),
-      col: Number.parseInt(selectedCells.first.id[1]),
-    },
-    to: {
-      row: Number.parseInt(selectedCells.second.id[0]),
-      col: Number.parseInt(selectedCells.second.id[1]),
-    },
+    cells: selectedCells.cells.map<Cell>((el) => ({
+      row: Number.parseInt(el.id[0]),
+      col: Number.parseInt(el.id[1]),
+    })),
   };
 };
 
 export const selectNextCell = (event: React.MouseEvent, selectedCells: SelectedCells) => {
-  if (selectedCells.first == null) {
-    selectedCells.first = event.currentTarget;
-    clearBgColor(selectedCells.first);
-    event.currentTarget.classList.add(CellFirstSelectedBgColor);
-  } else if (selectedCells.second == null) {
-    selectedCells.second = event.currentTarget;
-    clearBgColor(selectedCells.second);
-    event.currentTarget.classList.add(CellSecondSelectedBgColor);
-  } else {
-    resetSelectedCells(selectedCells);
-  }
+  if (selectedCells.cells.includes(event.currentTarget)) return;
+
+  // fill bg with numbers??
+  clearBgColor(event.currentTarget);
+  event.currentTarget.classList.add("bg-red-700");
+  selectedCells.cells.push(event.currentTarget);
+
   console.log(selectedCells);
 };

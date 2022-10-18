@@ -6,7 +6,6 @@ namespace CheckersGame.Api.Models
     {
         public Guid PlayerId { get; set; }
 
-        public Cell From { get; set; }
-        public Cell To { get; set; }
+        public Cell[] Cells { get; set; } = null!;
     }
 }

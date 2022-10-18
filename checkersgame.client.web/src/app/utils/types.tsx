@@ -1,6 +1,5 @@
 export interface SelectedCells {
-  first: Element | null;
-  second: Element | null;
+  cells: Element[];
 }
 
 export interface JoinModel {
@@ -11,14 +10,12 @@ export interface JoinModel {
 export interface StepGameModel {
   gameId: string;
   playerId: string;
-  from: {
-    row: number;
-    col: number;
-  };
-  to: {
-    row: number;
-    col: number;
-  };
+  cells: Cell[];
+}
+
+export interface Cell {
+  row: number;
+  col: number;
 }
 
 export interface UpdateGameModel {
