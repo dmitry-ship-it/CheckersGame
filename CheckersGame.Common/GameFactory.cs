@@ -1,6 +1,5 @@
 ﻿using CheckersGame.Api.Core;
 using CheckersGame.Common.Core;
-using CheckersGame.Common.Impl.International;
 
 namespace CheckersGame.Common
 {
